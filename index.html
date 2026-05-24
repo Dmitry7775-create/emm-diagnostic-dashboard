@@ -137,10 +137,20 @@
   .intro-card .step span{font-size:18px;color:var(--mute);line-height:1.5}
 
   /* === Banner === */
-  .banner{margin-bottom:18px}
-  .banner-inner{background:#FFF7E0;border:1px solid var(--warn);color:#7A4A06;border-radius:var(--radius-sm);padding:16px 20px;font-size:17px;font-weight:600;display:none;align-items:center;gap:12px}
-  [data-theme="dark"] .banner-inner{background:#3A2A0C;color:#FCD34D;border-color:var(--warn)}
+  .banner{margin:0 0 22px;position:relative}
+  .banner-inner{background:linear-gradient(135deg,#FFF3D6 0%,#FFE7B3 100%);border:2px solid var(--warn);color:#7A4A06;border-radius:var(--radius-sm);padding:18px 22px;font-size:17px;font-weight:600;display:none;align-items:center;gap:14px;box-shadow:0 4px 16px rgba(217,119,6,0.18);animation:bannerPulse 2s ease-in-out infinite}
+  .banner-inner .banner-icon{font-size:26px;flex-shrink:0;animation:bannerIcon 1.4s ease-in-out infinite}
+  .banner-inner .banner-text{flex:1;line-height:1.45}
+  .banner-inner .banner-text b{display:block;font-size:18px;margin-bottom:2px;color:#5A3504}
+  .banner-inner .banner-arrow{font-size:30px;color:var(--warn);animation:bannerArrow 1.2s ease-in-out infinite;flex-shrink:0}
+  [data-theme="dark"] .banner-inner{background:linear-gradient(135deg,#3A2A0C 0%,#4A3410 100%);color:#FCD34D;border-color:var(--warn)}
+  [data-theme="dark"] .banner-inner .banner-text b{color:#FDE68A}
   .banner.show .banner-inner{display:flex}
+  @keyframes bannerPulse{0%,100%{box-shadow:0 4px 16px rgba(217,119,6,0.18)}50%{box-shadow:0 6px 24px rgba(217,119,6,0.38)}}
+  @keyframes bannerIcon{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+  @keyframes bannerArrow{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .revenue-field.highlight{outline:3px solid var(--warn);outline-offset:3px;border-radius:var(--radius-xs);animation:fieldPulse 2s ease-in-out infinite}
+  @keyframes fieldPulse{0%,100%{outline-color:var(--warn)}50%{outline-color:#FCD34D}}
 
   /* === Two-column main === */
   .main-split{display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:start}
@@ -537,6 +547,14 @@
 
   <main class="content">
 
+    <div class="banner" id="revenue-banner">
+      <div class="banner-inner">
+        <span class="banner-icon">⚠️</span>
+        <span class="banner-text"><b>Шаг 1. Заполните выручку компании за месяц</b>Без этой цифры расчёт потерь в рублях не работает и диагностика теряет половину смысла.</span>
+        <span class="banner-arrow">↗</span>
+      </div>
+    </div>
+
     <div class="topbar">
       <div class="title-block">
         <h1>Где утекает прибыль</h1>
@@ -578,13 +596,6 @@
         <div class="label">🎯 Уровень системы</div>
         <div class="value" id="t-band" style="font-size:22px;line-height:1.2;white-space:normal">не задан</div>
         <div class="sub" id="t-band-desc">Заполните хотя бы один блок</div>
-      </div>
-    </div>
-
-    <div class="banner" id="revenue-banner">
-      <div class="banner-inner">
-        <span>⚠️</span>
-        <span>Укажите выручку вверху, иначе расчёт потерь в рублях не работает. Без этой цифры диагностика теряет половину смысла.</span>
       </div>
     </div>
 
@@ -913,6 +924,8 @@ function updateTotal(){
 
   const banner = document.getElementById("revenue-banner");
   if(banner) banner.classList.toggle("show", !rev);
+  const revField = document.querySelector(".revenue-field");
+  if(revField) revField.classList.toggle("highlight", !rev);
 
   renderWeakSpots(rev, filled);
 
