@@ -128,13 +128,20 @@
   .kpi.accent .progress .fill{background:var(--dark)}
 
   /* === Intro card === */
-  .intro-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;margin-bottom:24px}
-  .intro-card h3{margin:0 0 10px;font-size:26px;font-weight:700;letter-spacing:-0.01em}
-  .intro-card p{margin:8px 0;font-size:19px;line-height:1.55;color:var(--mute)}
-  .intro-card .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
-  .intro-card .step{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius-sm);padding:18px 20px}
-  .intro-card .step b{display:block;font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em}
-  .intro-card .step span{font-size:18px;color:var(--mute);line-height:1.5}
+  .intro-card{position:relative;background:linear-gradient(135deg,var(--dark) 0%,var(--dark-2) 100%);color:var(--bg);border:none;border-radius:var(--radius);padding:36px 36px 32px;margin-bottom:28px;box-shadow:var(--shadow-lg);overflow:hidden}
+  .intro-card::before{content:"";position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,var(--accent) 0%,transparent 70%);opacity:0.18;pointer-events:none}
+  .intro-card .intro-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);background:rgba(201,169,97,0.15);border:1px solid rgba(201,169,97,0.4);padding:6px 14px;border-radius:999px;margin-bottom:14px}
+  .intro-card .intro-eyebrow::before{content:"📖";font-size:14px}
+  .intro-card h3{margin:0 0 12px;font-size:32px;font-weight:800;letter-spacing:-0.015em;color:var(--bg);line-height:1.15}
+  .intro-card p{margin:8px 0 0;font-size:18px;line-height:1.6;color:#D5CFC2;max-width:780px}
+  .intro-card .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px;position:relative;z-index:1}
+  .intro-card .step{position:relative;background:rgba(255,255,255,0.06);border:1px solid rgba(201,169,97,0.25);border-radius:var(--radius-sm);padding:22px 22px 22px 24px;transition:all .2s;backdrop-filter:blur(4px)}
+  .intro-card .step:hover{background:rgba(255,255,255,0.1);border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.25)}
+  .intro-card .step .step-num{position:absolute;top:-14px;left:20px;width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--accent-text);display:grid;place-items:center;font-weight:800;font-size:16px;box-shadow:0 4px 12px rgba(201,169,97,0.4);border:3px solid var(--dark)}
+  .intro-card .step .step-icon{font-size:26px;margin-bottom:10px;display:block}
+  .intro-card .step b{display:block;font-size:15px;font-weight:700;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em}
+  .intro-card .step span{font-size:16px;color:#D5CFC2;line-height:1.5;display:block}
+  [data-theme="dark"] .intro-card{background:linear-gradient(135deg,#262320 0%,#1F1D18 100%)}
 
   /* === Banner === */
   .banner{margin:0 0 22px;position:relative}
@@ -651,12 +658,13 @@
     </div>
 
     <div class="intro-card" id="intro-container">
+      <div class="intro-eyebrow">Инструкция</div>
       <h3>Как пользоваться диагностикой</h3>
       <p>Это рентген системы маркетинга. 14 блоков, каждый блок = деньги, которые вы либо зарабатываете, либо теряете каждый месяц. Через 10-12 минут увидите, сколько именно теряете и куда смотреть в первую очередь.</p>
       <div class="steps">
-        <div class="step"><b>Шаг 1. Выручка</b><span>Укажите среднюю выручку в месяц. Без этого расчёт потерь в рублях невозможен.</span></div>
-        <div class="step"><b>Шаг 2. Оценки</b><span>По каждому из 14 блоков честная оценка от 1 (нет) до 5 (идеально).</span></div>
-        <div class="step"><b>Шаг 3. Раскрытие</b><span>Нажмите на блок, чтобы увидеть пояснение: что это, почему теряете деньги, что делать.</span></div>
+        <div class="step"><span class="step-num">1</span><span class="step-icon">💰</span><b>Выручка</b><span>Укажите среднюю выручку в месяц. Без этого расчёт потерь в рублях невозможен.</span></div>
+        <div class="step"><span class="step-num">2</span><span class="step-icon">✅</span><b>Оценки</b><span>По каждому из 14 блоков честная оценка от 1 (нет) до 5 (идеально).</span></div>
+        <div class="step"><span class="step-num">3</span><span class="step-icon">📊</span><b>Раскрытие</b><span>Нажмите на блок, чтобы увидеть пояснение: что это, почему теряете деньги, что делать.</span></div>
       </div>
     </div>
 
