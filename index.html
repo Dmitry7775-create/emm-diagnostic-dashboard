@@ -182,7 +182,7 @@
   .q.scored-3{border-left:4px solid var(--r3)}
   .q.scored-4{border-left:4px solid var(--r4)}
   .q.scored-5{border-left:4px solid var(--r5)}
-  .q .head{display:grid;grid-template-columns:1fr 380px 36px;gap:22px;padding:20px 24px;align-items:center;cursor:pointer}
+  .q .head{display:grid;grid-template-columns:1fr 380px auto;gap:22px;padding:20px 24px;align-items:center;cursor:pointer}
   .q .head:hover{background:var(--hover)}
   .q .block{font-weight:700;font-size:22px;letter-spacing:-0.01em}
   .q .question{font-size:18px;color:var(--mute);margin-top:5px;line-height:1.45}
@@ -199,9 +199,9 @@
   .q .scale-buttons button.sel-3{background:var(--r3);color:#111111;border-color:var(--r3)}
   .q .scale-buttons button.sel-4{background:var(--r4);color:#111111;border-color:var(--r4)}
   .q .scale-buttons button.sel-5{background:var(--r5);color:#FFFFFF;border-color:var(--r5)}
-  .q .toggle{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--accent-2);background:var(--simple-bg);border:1px solid var(--accent);border-radius:999px;padding:6px 12px;user-select:none;transition:all .15s;white-space:nowrap;cursor:pointer}
-  .q .toggle .chev{display:inline-block;font-size:14px;transition:transform .2s}
-  .q:hover .toggle{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+  .q .toggle{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--accent-2);background:var(--simple-bg);border:1px solid var(--accent);border-radius:999px;padding:8px 16px;user-select:none;transition:all .15s;white-space:nowrap;cursor:pointer;min-width:130px;justify-content:center}
+  .q .toggle .chev{display:inline-block;font-size:14px;transition:transform .2s;line-height:1}
+  .q:hover .toggle{background:var(--accent);color:var(--accent-text);border-color:var(--accent);transform:translateY(-1px);box-shadow:0 2px 8px rgba(201,169,97,0.3)}
   .q.open .toggle{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
   .q.open .toggle .chev{transform:rotate(90deg)}
   .q .toggle .label-closed{display:inline}
