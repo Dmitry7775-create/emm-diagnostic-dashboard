@@ -1,0 +1,1157 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Диагностика упущенной прибыли по ЭММ Дениса Смирнова</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* === EMM palette: graphite + matte gold === */
+  :root{
+    --bg:#FAF7F2; --card:#FFFFFF; --line:#E8E2D6; --text:#1A1A1A; --mute:#6B6B66;
+    --accent:#C9A961; --accent-2:#A88847; --accent-text:#1A1A1A;
+    --dark:#1F1F1F; --dark-2:#2A2A2A;
+    --warn:#D97706; --danger:#B91C1C; --ok:#15803D;
+    --r1:#B91C1C; --r2:#D97706; --r3:#CA8A04; --r4:#65A30D; --r5:#15803D;
+    --shadow:0 1px 2px rgba(31,31,31,0.04),0 4px 16px rgba(31,31,31,0.06);
+    --shadow-lg:0 8px 32px rgba(31,31,31,0.10);
+    --simple-bg:#FBF6E8;
+    --legend-bg:#F5F0E4;
+    --why-bg:#FBEEEA; --get-bg:#EEF6E8; --do-bg:#F0EFE8;
+    --hover:#F2EDE2;
+    --radius:16px; --radius-sm:10px; --radius-xs:6px;
+    --sidebar-w:280px;
+  }
+  [data-theme="dark"]{
+    --bg:#0E0E0C; --card:#1A1A18; --line:#2E2C28; --text:#F5F0E4; --mute:#A8A39A;
+    --accent:#D4B16E; --accent-2:#B89456; --accent-text:#1A1A1A;
+    --dark:#46402E; --dark-2:#52493A;
+    --warn:#F59E0B; --danger:#EF6F6F; --ok:#5BCB7E;
+    --r1:#EF6F6F; --r2:#F59E0B; --r3:#EAB308; --r4:#A3E635; --r5:#5BCB7E;
+    --shadow:none; --shadow-lg:none;
+    --simple-bg:#241F12;
+    --legend-bg:#1F1D18;
+    --why-bg:#3A1E1A; --get-bg:#1E2E1B; --do-bg:#2A2820;
+    --hover:#262320;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:22px/1.5 "Manrope","Inter",-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);transition:background .2s,color .2s;-webkit-font-smoothing:antialiased}
+
+  /* === Layout === */
+  .app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:100vh;max-width:1600px;margin:0 auto;background:var(--bg)}
+
+  /* === Sidebar === */
+  .sidebar{background:var(--card);border-right:1px solid var(--line);padding:24px 18px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:18px}
+  .sidebar .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:24px;letter-spacing:-0.01em;padding:0 6px 8px}
+  .sidebar .logo .dot{width:38px;height:38px;border-radius:8px;background:var(--accent);display:grid;place-items:center;color:var(--accent-text);font-weight:800;font-size:19px}
+  .sidebar .nav-title{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--mute);padding:0 6px;margin:4px 0 0}
+  .sidebar .nav{display:flex;flex-direction:column;gap:4px}
+  .sidebar .nav a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-radius:12px;text-decoration:none;color:var(--text);font-weight:600;font-size:19px;background:var(--bg);border:1.5px solid var(--line);box-shadow:0 1px 2px rgba(17,17,17,0.04);transition:all .15s;cursor:pointer}
+  .sidebar .nav a:hover{background:var(--card);border-color:var(--text);transform:translateY(-1px);box-shadow:0 4px 12px rgba(17,17,17,0.08)}
+  .sidebar .nav a:active{transform:translateY(0)}
+  .sidebar .nav a.active{background:var(--dark);color:#FFFFFF;border-color:var(--dark);box-shadow:0 4px 14px rgba(0,0,0,0.25)}
+  .sidebar .nav a .ic{width:32px;height:32px;border-radius:8px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;font-size:18px;flex-shrink:0}
+  .sidebar .nav a.active .ic{background:var(--accent);border-color:var(--accent);color:var(--accent-text)}
+  .sidebar .nav a .chip{background:var(--card);color:var(--mute);border:1px solid var(--line);padding:4px 12px;border-radius:20px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+  .sidebar .nav a.active .chip{background:#FFFFFF22;border-color:transparent;color:#FFFFFF}
+  .sidebar .upgrade{margin-top:auto;background:var(--dark);color:#FFFFFF;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px}
+  .sidebar .upgrade .title{font-weight:700;font-size:19px}
+  .sidebar .upgrade .sub{font-size:16px;color:#FFFFFF99;line-height:1.45}
+  .sidebar .upgrade button{background:var(--accent);color:var(--accent-text);border:0;padding:13px 16px;border-radius:10px;font-weight:700;cursor:pointer;font-size:17px;font-family:inherit}
+  .bottom-cta{margin:36px auto 16px;max-width:980px;background:var(--dark);color:#FFFFFF;border-radius:18px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;box-shadow:0 10px 30px rgba(0,0,0,0.18)}
+  .bottom-cta-text{flex:1 1 360px;min-width:280px}
+  .bottom-cta-title{font-weight:800;font-size:26px;letter-spacing:-0.01em;margin-bottom:8px}
+  .bottom-cta-sub{font-size:17px;color:#FFFFFFB3;line-height:1.5}
+  .bottom-cta-delta{margin-top:14px;padding:12px 16px;background:rgba(201,169,97,0.14);border-left:3px solid var(--accent);border-radius:6px;font-size:15px;color:#FFFFFF;line-height:1.45}
+  .bottom-cta-delta b{color:var(--accent);font-weight:800}
+  .bottom-cta-btn{background:var(--accent);color:var(--accent-text);border:0;padding:18px 28px;border-radius:12px;font-weight:800;cursor:pointer;font-size:19px;font-family:inherit;white-space:nowrap;transition:transform .15s,box-shadow .15s}
+  .bottom-cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(201,169,97,0.45)}
+
+  /* === Content === */
+  .content{padding:28px 32px 220px;max-width:1360px;margin:0 auto;width:100%}
+
+  /* === Topbar === */
+  .topbar{display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:26px}
+  .topbar .title-block{text-align:center;width:100%}
+  .topbar .actions{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;width:100%}
+  .topbar h1{margin:0;font-size:44px;font-weight:800;letter-spacing:-0.02em}
+  .topbar .trust{margin:8px 0 0;font-size:18px;color:var(--mute);font-weight:500}
+
+  /* === Hero clients strip под h1 === */
+  .hero-clients{margin:18px auto 0;display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap;max-width:760px}
+  .hero-clients .label{font-size:13px;color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:0.08em}
+  .hero-client{display:flex;align-items:center;gap:10px}
+  .hero-client img{width:46px;height:46px;border-radius:50%;object-fit:cover;object-position:center 20%;border:2px solid var(--accent);background:var(--line)}
+  .hero-client .name{font-size:14px;color:var(--text);font-weight:700;line-height:1.2}
+  .hero-client .niche{font-size:12px;color:var(--mute);line-height:1.2;display:block;margin-top:2px}
+  @media(max-width:760px){.hero-clients{gap:14px}.hero-client img{width:38px;height:38px}.hero-client .name{font-size:13px}}
+  .topbar input{background:var(--card);border:1px solid var(--line);color:var(--text);padding:13px 16px;border-radius:10px;font:inherit;font-size:18px;font-weight:500}
+  .topbar input[type=number]{width:240px}
+  .topbar input[type=text]{width:240px}
+  .topbar input[type=date]{width:200px}
+  .topbar .inputs{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+
+  /* Revenue field highlighted */
+  .topbar .revenue-field{display:flex;align-items:stretch;border:2px solid var(--accent);border-radius:10px;background:#FBF6E8;overflow:hidden;box-shadow:0 0 0 4px rgba(201,169,97,0.18)}
+  .topbar .revenue-field .revenue-label{display:flex;align-items:center;padding:0 14px;background:var(--accent);color:var(--accent-text);font-size:17px;font-weight:700;letter-spacing:0.02em;white-space:nowrap}
+  .topbar .revenue-field input#revenue{border:0;background:transparent;width:240px;font-size:21px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;padding:13px 16px}
+  .topbar .revenue-field input#revenue:focus{outline:none}
+  .topbar .revenue-field input#revenue::placeholder{font-weight:500;color:var(--mute)}
+  [data-theme="dark"] .topbar .revenue-field{background:#2A241A}
+  .topbar button{background:var(--card);color:var(--text);border:1px solid var(--line);padding:13px 16px;border-radius:10px;font-weight:600;cursor:pointer;font-size:18px;font-family:inherit;transition:background .15s}
+  .topbar button:hover{background:var(--hover)}
+  .topbar button.primary{background:var(--dark);color:#FFFFFF;border-color:var(--dark)}
+  .topbar button.primary:hover{background:var(--dark-2)}
+  .topbar button.icon{padding:13px 16px;font-size:22px;line-height:1}
+
+  /* === KPI grid === */
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;position:sticky;top:0;z-index:40;background:var(--bg);padding:12px 0 14px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+  .kpi.dark{background:var(--dark);color:#FFFFFF;border-color:var(--dark)}
+  .kpi.accent{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+  .kpi .label{font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--mute);display:flex;align-items:center;gap:8px}
+  .kpi.dark .label{color:#FFFFFF99}
+  .kpi.accent .label{color:#11111199}
+  .kpi .value{font-size:26px;font-weight:800;letter-spacing:-0.02em;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .kpi .value small{font-size:15px;font-weight:600;color:var(--mute);letter-spacing:0;white-space:nowrap}
+  .kpi.dark .value small,.kpi.accent .value small{color:inherit;opacity:0.7}
+  .kpi .sub{font-size:15px;color:var(--mute);font-weight:500;line-height:1.4;margin-top:3px}
+  .kpi.dark .sub{color:#FFFFFFAA}
+  .kpi.accent .sub{color:#111111AA}
+  .kpi .progress{height:6px;background:rgba(0,0,0,0.06);border-radius:3px;margin-top:10px;overflow:hidden}
+  .kpi.dark .progress{background:#FFFFFF22}
+  .kpi.accent .progress{background:#11111122}
+  .kpi .progress .fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+  .kpi.dark .progress .fill{background:var(--accent)}
+  .kpi.accent .progress .fill{background:var(--dark)}
+
+  /* === Intro card === */
+  .intro-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;margin-bottom:24px}
+  .intro-card h3{margin:0 0 10px;font-size:26px;font-weight:700;letter-spacing:-0.01em}
+  .intro-card p{margin:8px 0;font-size:19px;line-height:1.55;color:var(--mute)}
+  .intro-card .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+  .intro-card .step{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius-sm);padding:18px 20px}
+  .intro-card .step b{display:block;font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em}
+  .intro-card .step span{font-size:18px;color:var(--mute);line-height:1.5}
+
+  /* === Banner === */
+  .banner{margin-bottom:18px}
+  .banner-inner{background:#FFF7E0;border:1px solid var(--warn);color:#7A4A06;border-radius:var(--radius-sm);padding:16px 20px;font-size:17px;font-weight:600;display:none;align-items:center;gap:12px}
+  [data-theme="dark"] .banner-inner{background:#3A2A0C;color:#FCD34D;border-color:var(--warn)}
+  .banner.show .banner-inner{display:flex}
+
+  /* === Two-column main === */
+  .main-split{display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:start}
+  @media (max-width:1280px){
+    .main-split{grid-template-columns:1fr}
+  }
+
+  /* === Module === */
+  .module{margin-bottom:20px}
+  .module-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:0 4px}
+  .module-head h2{margin:0;font-size:18px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--mute)}
+  .module-head .mod-score{font-size:18px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;background:var(--card);border:1px solid var(--line);padding:6px 14px;border-radius:20px}
+
+  /* === Question card === */
+  .q{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;transition:border-color .15s,box-shadow .15s;box-shadow:var(--shadow)}
+  .q:hover{box-shadow:var(--shadow-lg)}
+  .q.scored-1{border-left:4px solid var(--r1)}
+  .q.scored-2{border-left:4px solid var(--r2)}
+  .q.scored-3{border-left:4px solid var(--r3)}
+  .q.scored-4{border-left:4px solid var(--r4)}
+  .q.scored-5{border-left:4px solid var(--r5)}
+  .q .head{display:grid;grid-template-columns:1fr 380px 36px;gap:22px;padding:20px 24px;align-items:center;cursor:pointer}
+  .q .head:hover{background:var(--hover)}
+  .q .block{font-weight:700;font-size:22px;letter-spacing:-0.01em}
+  .q .question{font-size:18px;color:var(--mute);margin-top:5px;line-height:1.45}
+
+  /* Hatched-bar style scale buttons */
+  .q .scale-buttons{display:flex;gap:5px;flex-direction:column}
+  .q .scale-buttons .row{display:flex;gap:5px}
+  .q .scale-buttons .labels{display:flex;gap:5px;font-size:13px;color:var(--mute);text-transform:uppercase;letter-spacing:0.04em;font-weight:700}
+  .q .scale-buttons .labels span{flex:1;text-align:center}
+  .q .scale-buttons button{flex:1;height:52px;border:1px solid var(--line);background:repeating-linear-gradient(45deg,transparent 0,transparent 3px,var(--hover) 3px,var(--hover) 5px);color:var(--mute);border-radius:var(--radius-xs);cursor:pointer;font-weight:700;font-size:21px;transition:all .15s;font-family:inherit}
+  .q .scale-buttons button:hover{border-color:var(--text);color:var(--text)}
+  .q .scale-buttons button.sel-1{background:var(--r1);color:#FFFFFF;border-color:var(--r1)}
+  .q .scale-buttons button.sel-2{background:var(--r2);color:#FFFFFF;border-color:var(--r2)}
+  .q .scale-buttons button.sel-3{background:var(--r3);color:#111111;border-color:var(--r3)}
+  .q .scale-buttons button.sel-4{background:var(--r4);color:#111111;border-color:var(--r4)}
+  .q .scale-buttons button.sel-5{background:var(--r5);color:#FFFFFF;border-color:var(--r5)}
+  .q .toggle{font-size:24px;color:var(--mute);text-align:center;user-select:none;transition:transform .15s}
+  .q .details{padding:0 24px 22px;display:none;border-top:1px solid var(--line);margin-top:0}
+  .q.open .details{display:block}
+  .q.open .toggle{transform:rotate(90deg)}
+  .q .details .simple-block{background:var(--simple-bg);border-left:3px solid var(--accent-2);padding:16px 20px;border-radius:var(--radius-xs);margin:18px 0 0;font-size:18px;line-height:1.55}
+  .q .details .simple-block b{display:block;font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:0.04em;text-transform:uppercase}
+  .q .details dl{margin:16px 0 0;display:grid;grid-template-columns:220px 1fr;gap:12px 22px;font-size:17px}
+  .q .details dt{color:var(--mute);font-weight:600}
+  .q .details dd{margin:0;white-space:pre-wrap;line-height:1.5}
+  .q .details .scale-legend{background:var(--legend-bg);border:1px solid var(--line);padding:14px 16px;border-radius:var(--radius-xs);font-family:ui-monospace,Consolas,monospace;font-size:16px;white-space:pre-wrap;line-height:1.6}
+  .q .details .why-block{background:var(--why-bg);border-left:3px solid var(--danger);padding:14px 18px;border-radius:var(--radius-xs)}
+  .q .details .get-block{background:var(--get-bg);border-left:3px solid var(--ok);padding:14px 18px;border-radius:var(--radius-xs)}
+  .q .details .do-block{background:var(--do-bg);border-left:3px solid var(--accent-2);padding:14px 18px;border-radius:var(--radius-xs)}
+
+  /* === Right pane: weakspots === */
+  .right-pane{display:flex;flex-direction:column;gap:14px;position:sticky;top:24px}
+  .pane-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+  .pane-card h3{margin:0 0 6px;font-size:22px;font-weight:700;letter-spacing:-0.01em}
+  .pane-card .sub{margin:0 0 14px;font-size:16px;color:var(--mute);line-height:1.5}
+  .weakspots-list{display:flex;flex-direction:column;gap:12px}
+  .weakspot{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px 16px;border-left:3px solid var(--danger);transition:transform .15s}
+  .weakspot:hover{transform:translateX(2px)}
+  .weakspot .rank{font-size:14px;color:var(--mute);font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
+  .weakspot .name{font-size:18px;font-weight:700;margin:4px 0 8px;line-height:1.3}
+  .weakspot .score{display:inline-block;font-size:15px;color:var(--danger);font-weight:700;background:var(--why-bg);padding:3px 10px;border-radius:20px}
+  [data-theme="dark"] .weakspot .score{background:var(--why-bg);color:#FCA5A5}
+  .weakspot .loss-est{font-size:17px;color:var(--text);margin-top:10px}
+  .weakspot .loss-est b{color:var(--warn);font-weight:700}
+  .weakspot .first-step{font-size:15px;color:var(--mute);margin-top:8px;line-height:1.45}
+  .weakspot .first-step b{color:var(--text)}
+
+  .method-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;font-size:16px;color:var(--mute);line-height:1.55}
+  .method-card h4{margin:0 0 8px;font-size:15px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.06em}
+
+  /* === Trust strip над bottom-CTA === */
+  .trust-strip{margin:32px auto 0;max-width:980px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px}
+  .trust-strip h4{margin:0 0 14px;font-size:13px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:0.08em}
+  .trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .trust-item{display:flex;flex-direction:column;gap:4px}
+  .trust-item .num{font-size:32px;font-weight:800;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-0.02em}
+  .trust-item .lbl{font-size:14px;color:var(--text);font-weight:600;line-height:1.3}
+  .trust-item .note{font-size:12px;color:var(--mute);line-height:1.4}
+  @media(max-width:760px){.trust-grid{grid-template-columns:1fr;gap:16px}.trust-item .num{font-size:26px}}
+
+  /* === Social proof под bottom-CTA === */
+  .social-proof{margin:24px auto 16px;max-width:980px}
+  .social-proof-head{text-align:center;margin-bottom:20px}
+  .social-proof-head .eyebrow{font-size:13px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px}
+  .social-proof-head h3{margin:0;font-size:24px;font-weight:800;color:var(--text);letter-spacing:-0.01em}
+  .clients-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+  .client-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 22px 18px;display:flex;flex-direction:column;gap:10px;transition:transform .15s,border-color .15s}
+  .client-card:hover{transform:translateY(-2px);border-color:var(--accent)}
+  .client-card .photo{width:80px;height:80px;border-radius:50%;object-fit:cover;object-position:center 20%;border:2px solid var(--accent);background:var(--line);margin-bottom:4px}
+  .client-card .logo{font-size:18px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:0.04em;line-height:1.2}
+  .client-card .niche{font-size:15px;color:var(--mute);line-height:1.35}
+  .client-card .quote{font-size:16px;color:var(--text);line-height:1.55;margin-top:6px}
+  .client-card .metric{font-size:14px;font-weight:700;color:var(--accent);margin-top:auto;padding-top:10px;border-top:1px dashed var(--line)}
+  @media(max-width:760px){.clients-row{grid-template-columns:1fr}.client-card{align-items:flex-start}}
+
+  .credentials-row{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 26px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .cred{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--mute);line-height:1.45}
+  .cred b{display:block;font-size:15px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+  @media(max-width:760px){.credentials-row{grid-template-columns:1fr 1fr}}
+
+  .final-nudge{margin:24px auto 8px;max-width:980px;text-align:center;font-size:17px;color:var(--mute);line-height:1.5}
+  .final-nudge a{color:var(--accent);font-weight:700;cursor:pointer;text-decoration:none;border-bottom:1px dashed var(--accent)}
+  .final-nudge a:hover{border-bottom-style:solid}
+
+  /* === Cases gallery (полноразмерные карточки кейсов) === */
+  .cases-gallery{margin:32px auto 0;max-width:1100px}
+  .cases-gallery-head{text-align:center;margin-bottom:22px}
+  .cases-gallery-head .eyebrow{font-size:13px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px}
+  .cases-gallery-head h3{margin:0 0 10px;font-size:24px;font-weight:800;color:var(--text);letter-spacing:-0.01em}
+  .cases-gallery-head .lead{font-size:16px;color:var(--mute);line-height:1.55;max-width:760px;margin:0 auto}
+  .cases-gallery-head .lead b{color:var(--text)}
+  .cases-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .case-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,border-color .15s,box-shadow .15s}
+  .case-card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 10px 24px rgba(201,169,97,0.18)}
+  .case-card .case-img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#0E0E0C;padding:8px}
+  [data-theme="light"] .case-card .case-img{background:#F5F0E4}
+  .case-card .case-name{padding:14px 18px 16px;font-size:16px;font-weight:700;color:var(--text);line-height:1.35}
+  @media(max-width:880px){.cases-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.cases-grid{grid-template-columns:1fr}}
+
+  /* === Дублирующий bottom-CTA после галереи === */
+  .bottom-cta-2{margin:32px auto 16px;max-width:980px}
+
+  /* Print-only ссылка вместо кнопки (кнопки <button> не кликабельны в PDF) */
+  .print-tg-link{display:none}
+
+  /* Print-only блок «Об авторе методики» (заполняет пустоту на 1-м листе печати) */
+  .print-author{display:none}
+
+  /* === Bottom dark CTA panel === */
+  .total{position:fixed;bottom:18px;left:calc(var(--sidebar-w) + 28px);right:28px;max-width:calc(1500px - var(--sidebar-w) - 28px);background:var(--dark);color:#FFFFFF;border-radius:18px;padding:18px 24px;z-index:10;box-shadow:0 12px 40px rgba(17,17,17,0.18)}
+  .total .inner{display:grid;grid-template-columns:1.3fr 1fr 1fr 1.3fr auto;gap:22px;align-items:center}
+  .total .preliminary{font-size:11px;color:var(--accent);margin-top:4px;font-weight:600}
+  .total .loss-label{font-size:11px;color:#FFFFFF99;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;font-weight:700}
+  .total .loss{font-size:26px;font-weight:800;color:var(--accent);line-height:1.1;font-variant-numeric:tabular-nums;letter-spacing:-0.02em}
+  .total .loss-year{font-size:12px;color:#FFFFFFAA;margin-top:4px}
+  .total .band-name{font-size:17px;font-weight:700;margin-bottom:3px}
+  .total .band-desc{font-size:11px;color:#FFFFFFAA;line-height:1.4;max-height:48px;overflow:hidden}
+  .total .score-big{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;letter-spacing:-0.02em}
+  .total .score-big small{font-size:14px;color:#FFFFFF77;font-weight:500}
+  .total .progress{height:6px;background:#FFFFFF22;border-radius:3px;margin-top:8px;overflow:hidden}
+  .total .progress .fill{height:100%;background:var(--accent);transition:width .3s}
+  .total .cta{background:var(--accent);color:var(--accent-text);border:0;padding:14px 22px;border-radius:12px;font-weight:800;cursor:pointer;font-size:14px;line-height:1.2;text-align:center;white-space:nowrap;font-family:inherit;transition:transform .15s}
+  .total .cta:hover{transform:translateY(-1px)}
+  .total .cta small{display:block;font-size:11px;font-weight:500;opacity:0.75;margin-top:2px}
+
+  .autosave-hint{position:fixed;bottom:8px;right:18px;font-size:14px;color:var(--mute);background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:6px;z-index:11;opacity:0.85}
+  .empty{color:var(--mute);font-style:italic}
+
+  /* === Mobile === */
+  @media (max-width:980px){
+    .app{grid-template-columns:1fr}
+    .sidebar{position:static;height:auto;flex-direction:row;flex-wrap:wrap;gap:10px;padding:14px}
+    .sidebar .logo{padding:0}
+    .sidebar .nav-title{display:none}
+    .sidebar .nav{flex-direction:row;flex-wrap:wrap;gap:6px}
+    .sidebar .nav a{padding:8px 10px;font-size:12px}
+    .sidebar .upgrade{display:none}
+    .bottom-cta{margin:24px 8px;padding:20px;flex-direction:column;align-items:stretch;text-align:center;gap:14px}
+    .bottom-cta-title{font-size:22px}
+    .bottom-cta-sub{font-size:15px}
+    .bottom-cta-btn{width:100%;padding:14px 20px;font-size:17px}
+    .content{padding:16px 16px 280px}
+    .topbar input[type=number],.topbar input[type=text],.topbar input[type=date]{width:100%}
+    .topbar .revenue-field{width:100%}
+    .topbar .revenue-field input#revenue{width:100%}
+    .topbar .inputs{flex-direction:column;align-items:stretch;width:100%}
+    .kpi-grid{grid-template-columns:repeat(2,1fr)}
+    .intro-card .steps{grid-template-columns:1fr}
+    .q .head{grid-template-columns:1fr;gap:10px;padding:14px}
+    .q .scale-buttons{width:100%}
+    .q .toggle{display:none}
+    .q .details dl{grid-template-columns:1fr;gap:4px 0}
+    .q .details dt{margin-top:8px}
+    .total{position:static;margin:18px 0 0;border-radius:14px}
+    .total .inner{grid-template-columns:1fr 1fr;gap:14px}
+    .total .cta{grid-column:span 2}
+  }
+
+  /* === Print === */
+  @media print{
+    @page{size:A4 landscape;margin:6mm}
+    /* Палитра дашборда: кремовый фон, графит, золото */
+    body{background:#FAF7F2 !important;color:#1A1A1A !important;font-size:13pt;font-family:"Manrope","Inter",Arial,sans-serif;line-height:1.4}
+    *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+    .sidebar,.banner,.autosave-hint,.right-pane,.topbar button,.q .toggle,.intro-card,.hero-clients,.topbar .actions{display:none !important}
+    .app{display:block;max-width:none;background:#FAF7F2}
+    .content{padding:0;max-width:none;margin:0;background:#FAF7F2}
+
+    /* Topbar */
+    .topbar{margin-bottom:6px}
+    .topbar h1{font-size:24pt;color:#1A1A1A;letter-spacing:-0.01em;margin:0 0 3px;font-weight:900;text-transform:uppercase;line-height:1.1;border-bottom:2px solid #C9A961;padding-bottom:8px}
+    .topbar .trust{font-size:10pt;margin-top:6px;color:#6B6B66;line-height:1.35}
+
+    /* KPI grid: цветные плашки как на дашборде */
+    .kpi-grid{grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px;position:static;padding:0;page-break-inside:avoid;background:transparent}
+    .kpi{background:#FFFFFF;color:#1A1A1A;border:1px solid #E8E2D6;border-radius:10px;padding:8px 12px;box-shadow:none;overflow:visible}
+    .kpi.dark{background:#1F1F1F !important;color:#FFFFFF !important;border-color:#1F1F1F}
+    .kpi.accent{background:#C9A961 !important;color:#1A1A1A !important;border-color:#C9A961}
+    .kpi .label{color:#6B6B66;font-size:9.5pt;letter-spacing:0.05em;font-weight:700;text-transform:uppercase}
+    .kpi.dark .label{color:rgba(255,255,255,0.7) !important}
+    .kpi.accent .label{color:rgba(26,26,26,0.65) !important}
+    .kpi .value{font-size:20pt;color:#1A1A1A;white-space:nowrap;overflow:visible;text-overflow:clip;letter-spacing:-0.03em;font-weight:800;line-height:1.15}
+    .kpi.dark .value{color:#FFFFFF !important}
+    .kpi.accent .value{color:#1A1A1A !important}
+    .kpi .value small{font-size:11pt;color:#6B6B66;font-weight:600}
+    .kpi.dark .value small{color:rgba(255,255,255,0.7) !important}
+    .kpi.accent .value small{color:rgba(26,26,26,0.65) !important}
+    .kpi .sub{color:#6B6B66;font-size:10pt;line-height:1.35;font-weight:500;margin-top:3px}
+    .kpi.dark .sub{color:rgba(255,255,255,0.7) !important}
+    .kpi.accent .sub{color:rgba(26,26,26,0.7) !important}
+    .kpi .progress{background:rgba(0,0,0,0.08);height:5px;border-radius:3px;margin-top:8px}
+    .kpi.dark .progress{background:rgba(255,255,255,0.18)}
+    .kpi.accent .progress{background:rgba(26,26,26,0.18)}
+    .kpi .progress .fill{background:#C9A961}
+    .kpi.dark .progress .fill{background:#C9A961}
+    .kpi.accent .progress .fill{background:#1F1F1F}
+
+    /* Print-only плашка «Что такое ЭММ» под KPI: вместе с KPI заполняет 1-й лист */
+    .print-author{display:flex !important;flex-direction:column;background:#FFFFFF !important;color:#1A1A1A !important;border:1px solid #E8E2D6;border-left:6px solid #C9A961;border-radius:12px;padding:14px 22px;margin:8mm 0 0;page-break-inside:avoid;box-shadow:none;gap:10px;min-height:88mm;justify-content:space-between;position:relative}
+    .print-author::before{content:"";position:absolute;top:-4mm;left:8%;right:8%;height:1px;background:#E8E2D6}
+    .print-author::after{content:"";position:absolute;top:-4mm;left:50%;transform:translate(-50%,-50%);width:42px;height:3px;background:#C9A961;border-radius:2px}
+    .print-author-left{padding-bottom:10px;border-bottom:1px solid #E8E2D6}
+    .print-author-eyebrow{color:#C9A961 !important;font-size:11pt;letter-spacing:0.14em;text-transform:uppercase;font-weight:800}
+    .print-author-name{color:#1A1A1A !important;font-size:22pt;font-weight:900;letter-spacing:-0.02em;line-height:1.05;margin-top:4px}
+    .print-author-role{color:#6B6B66 !important;font-size:11.5pt;font-weight:500;margin-top:6px;line-height:1.45}
+    .print-author-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding-bottom:2px;counter-reset:emm-col}
+    .pa-col{display:flex;flex-direction:column;gap:6px;position:relative;padding-left:0;counter-increment:emm-col}
+    .pa-col::before{content:counter(emm-col, decimal-leading-zero);display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:#FAF7F2;border:2px solid #C9A961;color:#C9A961;font-size:14pt;font-weight:900;letter-spacing:-0.02em;margin-bottom:2px}
+    .pa-col-eyebrow{color:#1A1A1A !important;font-size:12pt;letter-spacing:-0.005em;text-transform:uppercase;font-weight:800;line-height:1.2}
+    .pa-col-text{color:#1A1A1A !important;font-size:11.5pt;line-height:1.5;font-weight:500}
+    .pa-col-text b{color:#1A1A1A !important;font-weight:800;background:rgba(201,169,97,0.22);padding:0 4px;border-radius:3px}
+    .print-author-creds{color:#1A1A1A !important;font-size:12.5pt;line-height:1.35;font-weight:800;text-align:center;letter-spacing:0.005em;background:#C9A961;padding:10px 18px;border-radius:8px;margin:0 -4px}
+
+    /* Module: каждый модуль на отдельной странице, контент по центру */
+    .main-split{grid-template-columns:1fr;gap:0}
+    .module{margin:0;page-break-before:always;display:flex;flex-direction:column;justify-content:center;min-height:188mm}
+    .module-head{margin-bottom:14px;page-break-after:avoid;page-break-inside:avoid;padding:0 4px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #C9A961;padding-bottom:10px}
+    .module-head h2{color:#1A1A1A;border-bottom:none;padding-bottom:0;font-size:24pt;width:auto;flex:1;letter-spacing:-0.01em;text-transform:uppercase;font-weight:900;margin:0;line-height:1.1}
+    .module-head .mod-score{background:#1F1F1F;border:none;color:#C9A961;font-size:16pt;padding:8px 22px;white-space:nowrap;border-radius:30px;font-weight:800;letter-spacing:0.02em}
+
+    /* Question card */
+    .q{background:#FFFFFF;border:1px solid #E8E2D6;page-break-inside:avoid;box-shadow:none;margin-bottom:6px;border-radius:10px;overflow:hidden}
+    .q.scored-1{border-left:4px solid #B91C1C}
+    .q.scored-2{border-left:4px solid #D97706}
+    .q.scored-3{border-left:4px solid #CA8A04}
+    .q.scored-4{border-left:4px solid #65A30D}
+    .q.scored-5{border-left:4px solid #15803D}
+    .q .head{grid-template-columns:1fr 230px;padding:10px 14px;gap:14px;page-break-inside:avoid;align-items:center}
+    .q .block{font-size:13.5pt;color:#1A1A1A;font-weight:700;line-height:1.3}
+    .q .question{font-size:11pt;color:#6B6B66;margin-top:3px;line-height:1.4}
+
+    /* Шкала: все 5 кнопок видны, выбранная подсвечена */
+    .q .scale-buttons{display:flex;flex-direction:column;gap:3px}
+    .q .scale-buttons .row{display:flex;gap:4px}
+    .q .scale-buttons .labels{display:flex;gap:4px;font-size:7pt;color:#6B6B66;text-transform:uppercase;letter-spacing:0.03em;font-weight:700}
+    .q .scale-buttons .labels span{flex:1;text-align:center}
+    .q .scale-buttons button{flex:1;height:30px;border:1px solid #E8E2D6;background:#FAF7F2;color:#6B6B66;font-size:11pt;font-weight:700;border-radius:5px}
+    .q .scale-buttons button.sel-1{background:#B91C1C !important;color:#FFFFFF !important;border:2px solid #1A1A1A !important;font-size:14pt;font-weight:900;box-shadow:0 0 0 2px #C9A961 inset}
+    .q .scale-buttons button.sel-2{background:#D97706 !important;color:#FFFFFF !important;border:2px solid #1A1A1A !important;font-size:14pt;font-weight:900;box-shadow:0 0 0 2px #C9A961 inset}
+    .q .scale-buttons button.sel-3{background:#CA8A04 !important;color:#1A1A1A !important;border:2px solid #1A1A1A !important;font-size:14pt;font-weight:900;box-shadow:0 0 0 2px #C9A961 inset}
+    .q .scale-buttons button.sel-4{background:#65A30D !important;color:#FFFFFF !important;border:2px solid #1A1A1A !important;font-size:14pt;font-weight:900;box-shadow:0 0 0 2px #C9A961 inset}
+    .q .scale-buttons button.sel-5{background:#15803D !important;color:#FFFFFF !important;border:2px solid #1A1A1A !important;font-size:14pt;font-weight:900;box-shadow:0 0 0 2px #C9A961 inset}
+
+    /* Details: видны только для отвеченных */
+    .q:not([class*="scored-"]) .details{display:none !important}
+    .q[class*="scored-"] .details{display:block !important;border-top:1px solid #E8E2D6;padding:10px 14px 12px;font-size:11.5pt;color:#1A1A1A;line-height:1.4}
+    .q[class*="scored-"] .details .simple-block{background:#FBF6E8;border-left:3px solid #A88847;padding:9px 14px;font-size:11.5pt;margin:0 0 8px;line-height:1.4;color:#1A1A1A;border-radius:4px}
+    .q[class*="scored-"] .details .simple-block b{font-size:9pt;color:#1A1A1A;letter-spacing:0.04em;text-transform:uppercase;display:block;margin-bottom:4px}
+    .q[class*="scored-"] .details dl{grid-template-columns:140px 1fr;gap:6px 14px;font-size:11pt;margin:0;line-height:1.4}
+    .q[class*="scored-"] .details dt{color:#6B6B66;font-weight:600;font-size:10pt}
+    .q[class*="scored-"] .details dd{color:#1A1A1A;margin:0}
+    .q[class*="scored-"] .details .scale-legend{font-size:10pt;padding:8px 12px;background:#F5F0E4;border:1px solid #E8E2D6;border-radius:4px;font-family:ui-monospace,Consolas,monospace;color:#1A1A1A;line-height:1.5}
+    .q[class*="scored-"] .details .why-block,
+    .q[class*="scored-"] .details .get-block,
+    .q[class*="scored-"] .details .do-block{padding:8px 12px;font-size:11pt;line-height:1.4;border-radius:4px}
+    .q[class*="scored-"] .details .why-block{background:#FBEEEA;border-left:3px solid #B91C1C;color:#1A1A1A}
+    .q[class*="scored-"] .details .get-block{background:#EEF6E8;border-left:3px solid #15803D;color:#1A1A1A}
+    .q[class*="scored-"] .details .do-block{background:#F0EFE8;border-left:3px solid #A88847;color:#1A1A1A}
+
+    /* === ПРОДАЮЩИЕ БЛОКИ === */
+    /* Trust-strip */
+    .trust-strip{display:block !important;background:#FFFFFF;border:1px solid #E8E2D6;border-radius:12px;padding:18px 22px;margin:14px 0;page-break-inside:avoid;box-shadow:none}
+    .trust-strip h4{font-size:24pt;color:#1A1A1A;margin:0 0 14px;letter-spacing:-0.01em;text-transform:uppercase;font-weight:900;line-height:1.1;border-bottom:2px solid #C9A961;padding-bottom:10px}
+    .trust-strip .trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .trust-strip .trust-item .num{font-size:26pt;color:#C9A961;font-weight:800;letter-spacing:-0.02em;line-height:1}
+    .trust-strip .trust-item .lbl{font-size:12pt;color:#1A1A1A;font-weight:700;line-height:1.3;margin-top:3px}
+    .trust-strip .trust-item .note{font-size:10pt;color:#6B6B66;line-height:1.4;margin-top:3px}
+
+    /* Bottom CTA #1: графитовая плашка с золотой кнопкой */
+    .bottom-cta{display:flex !important;background:#1F1F1F !important;color:#FFFFFF !important;border:0;border-radius:14px;padding:18px 22px;margin:14px 0;page-break-inside:avoid;box-shadow:none;align-items:center;gap:18px;flex-wrap:nowrap}
+    .bottom-cta-text{flex:1 1 auto;min-width:0}
+    .bottom-cta-title{color:#FFFFFF !important;font-size:20pt;margin-bottom:6px;font-weight:800;letter-spacing:-0.01em}
+    .bottom-cta-sub{color:rgba(255,255,255,0.78) !important;font-size:11.5pt;line-height:1.45}
+    .bottom-cta-delta{background:rgba(201,169,97,0.16) !important;border-left:3px solid #C9A961;color:#FFFFFF !important;font-size:11pt;padding:9px 13px;margin-top:8px;border-radius:4px;line-height:1.45}
+    .bottom-cta-delta b{color:#C9A961 !important;font-weight:800}
+    .bottom-cta-btn{display:none !important}
+    .print-tg-link{display:inline-block !important;background:#C9A961 !important;color:#1A1A1A !important;font-size:14pt;padding:13px 24px;border-radius:10px;font-weight:800;text-decoration:none;border:0;white-space:nowrap;letter-spacing:-0.005em;flex-shrink:0;align-self:center}
+
+    /* Social-proof (3 hero) — крупный шрифт как на дашборде */
+    .social-proof{display:block !important;margin:16px 0;page-break-inside:avoid}
+    .social-proof-head{text-align:center;margin-bottom:16px}
+    .social-proof-head .eyebrow{font-size:12pt;color:#C9A961;letter-spacing:0.14em;text-transform:uppercase;font-weight:800}
+    .social-proof-head h3{font-size:26pt;color:#1A1A1A;margin:8px 0 0;font-weight:900;letter-spacing:-0.015em;line-height:1.1}
+    .clients-row{display:grid !important;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+    .client-card{background:#FFFFFF;border:1px solid #E8E2D6;border-radius:12px;padding:16px;page-break-inside:avoid}
+    .client-card .photo{width:72px;height:72px;border-radius:50%;border:3px solid #C9A961;object-fit:cover;object-position:center 20%}
+    .client-card .logo{font-size:14pt;color:#C9A961;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;margin-top:8px}
+    .client-card .niche{font-size:11.5pt;color:#6B6B66;line-height:1.4;margin-top:4px;font-weight:600}
+    .client-card .quote{font-size:12.5pt;color:#1A1A1A;line-height:1.5;margin-top:10px}
+    .client-card .metric{font-size:11.5pt;color:#C9A961;font-weight:800;border-top:1px dashed #E8E2D6;padding-top:8px;margin-top:10px}
+    .credentials-row{display:grid !important;grid-template-columns:repeat(4,1fr);gap:16px;background:#FFFFFF;border:1px solid #E8E2D6;border-radius:12px;padding:16px 20px}
+    .cred{font-size:11.5pt;color:#6B6B66;line-height:1.4}
+    .cred b{font-size:13pt;color:#1A1A1A;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;font-weight:800}
+
+    /* Cases gallery: новый разворот A4, крупные шрифты */
+    .cases-gallery{display:block !important;margin:0;page-break-before:always;padding-top:6mm;background:#FAF7F2}
+    .cases-gallery-head{text-align:center;margin-bottom:18px}
+    .cases-gallery-head .eyebrow{font-size:12pt;color:#C9A961;letter-spacing:0.14em;text-transform:uppercase;font-weight:800}
+    .cases-gallery-head h3{font-size:28pt;color:#1A1A1A;margin:8px 0 10px;font-weight:900;letter-spacing:-0.015em;line-height:1.1}
+    .cases-gallery-head .lead{font-size:13pt;color:#6B6B66;line-height:1.5;max-width:none}
+    .cases-gallery-head .lead b{color:#1A1A1A;font-weight:800}
+    .cases-grid{display:grid !important;grid-template-columns:repeat(3,1fr);gap:14px}
+    .case-card{background:#FFFFFF;border:1px solid #E8E2D6;border-radius:12px;overflow:hidden;page-break-inside:avoid;box-shadow:none}
+    .case-card .case-img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#F5F0E4;padding:8px}
+    .case-card .case-name{padding:12px 16px;font-size:13pt;color:#1A1A1A;font-weight:700;line-height:1.4}
+
+    /* Bottom CTA #2 (финальный): крупные шрифты */
+    .bottom-cta-2{display:block !important;margin:14px 0 0;page-break-inside:avoid}
+    .bottom-cta-2 .bottom-cta{margin:0;padding:24px 28px}
+    .bottom-cta-2 .bottom-cta-title{font-size:24pt}
+    .bottom-cta-2 .bottom-cta-sub{font-size:13pt;line-height:1.5}
+    .bottom-cta-2 .bottom-cta-delta{font-size:12.5pt;padding:12px 16px}
+    .bottom-cta-2 .print-tg-link{font-size:16pt;padding:16px 28px}
+
+    /* Total: финальная плашка с цифрой потерь */
+    .total{position:static;background:#1F1F1F !important;color:#FFFFFF !important;border:0;border-radius:14px;margin-top:14px;page-break-inside:avoid;box-shadow:none;padding:16px 22px;max-width:none;left:0;right:0}
+    .total .inner{grid-template-columns:1.3fr 1fr 1fr 1.3fr;gap:18px}
+    .total .loss-label{color:rgba(255,255,255,0.6) !important;font-size:10pt;letter-spacing:0.06em;text-transform:uppercase;font-weight:700}
+    .total .loss{color:#C9A961 !important;font-size:28pt;font-weight:800;letter-spacing:-0.02em;line-height:1.1}
+    .total .loss-year{color:rgba(255,255,255,0.65) !important;font-size:11pt;margin-top:4px}
+    .total .band-name{color:#FFFFFF !important;font-size:17pt;font-weight:700}
+    .total .band-desc{color:rgba(255,255,255,0.7) !important;max-height:none;font-size:10pt;line-height:1.4}
+    .total .score-big{color:#FFFFFF !important;font-size:28pt;font-weight:800}
+    .total .score-big small{color:rgba(255,255,255,0.55) !important;font-size:14pt;font-weight:500}
+    .total .progress{background:rgba(255,255,255,0.18)}
+    .total .progress .fill{background:#C9A961}
+    .total .preliminary{color:#C9A961 !important;font-size:10pt;font-weight:600}
+    .total .cta{display:none}
+  }
+</style>
+</head>
+<body data-theme="light">
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo"><div class="dot">Э</div><span>ЭММ Диагностика</span></div>
+    <div class="nav-title">Модули</div>
+    <nav class="nav">
+      <a href="#mod-1" class="active"><span><span class="ic">🎯</span> Лидогенерация</span><span class="chip" id="nav-score-1">0/20</span></a>
+      <a href="#mod-2"><span><span class="ic">💬</span> Конверсия</span><span class="chip" id="nav-score-2">0/20</span></a>
+      <a href="#mod-3"><span><span class="ic">🔁</span> Удержание</span><span class="chip" id="nav-score-3">0/20</span></a>
+      <a href="#mod-4"><span><span class="ic">📊</span> Аналитика</span><span class="chip" id="nav-score-4">0/10</span></a>
+    </nav>
+    <div class="nav-title">Действия</div>
+    <nav class="nav">
+      <a href="#" onclick="exportJSON();return false"><span><span class="ic">📥</span> Экспорт JSON</span></a>
+      <a href="#" onclick="printAll();return false"><span><span class="ic">📄</span> Печать отчёта</span></a>
+      <a href="#" onclick="resetAll();return false"><span><span class="ic">⟳</span> Сброс</span></a>
+    </nav>
+  </aside>
+
+  <main class="content">
+
+    <div class="topbar">
+      <div class="title-block">
+        <h1>Где утекает прибыль</h1>
+        <p class="trust">Диагностика упущенной прибыли по методу «Эталонная Модель Маркетинга» Дениса Смирнова. 14 блоков, 10 минут, цифра потерь в рублях. Методика доказана на 400+ проектах, среди клиентов: МЦ Елены Малышевой, Black Star Car Wash, Tony Robbins.</p>
+        <div class="hero-clients">
+          <div class="label">Уже&nbsp;внедрили:</div>
+          <div class="hero-client">
+            <img src="img/malysheva.jpg" alt="Елена Малышева">
+            <div><span class="name">МЦ Елены Малышевой</span><span class="niche">Медицина</span></div>
+          </div>
+          <div class="hero-client">
+            <img src="img/black-star.jpg" alt="Black Star">
+            <div><span class="name">Black Star Car Wash</span><span class="niche">Премиум-услуги</span></div>
+          </div>
+          <div class="hero-client">
+            <img src="img/tony-robbins.jpg" alt="Tony Robbins">
+            <div><span class="name">Tony Robbins</span><span class="niche">Бизнес-тренинги</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <div class="inputs">
+          <input id="client" type="text" placeholder="Компания">
+          <input id="date" type="date">
+          <div class="revenue-field">
+            <span class="revenue-label">Выручка ₽/мес</span>
+            <input id="revenue" type="text" inputmode="numeric" placeholder="например, 1 000 000">
+          </div>
+          <input id="expert" type="text" placeholder="Ваше имя">
+        </div>
+        <button class="icon" onclick="toggleTheme()" title="Тема" id="theme-btn">🌙</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="label">⚡ Баллов</div>
+        <div class="value" id="t-score">0<small> / 70</small></div>
+        <div class="sub" id="t-progress-text">Заполнено 0 из 14</div>
+        <div class="progress"><div class="fill" id="t-fill" style="width:0%"></div></div>
+      </div>
+      <div class="kpi dark">
+        <div class="label">💸 Потери / месяц</div>
+        <div class="value" id="t-loss">не задано</div>
+        <div class="sub" id="t-loss-year"></div>
+        <div class="preliminary" id="t-prelim"></div>
+      </div>
+      <div class="kpi">
+        <div class="label">📅 Потери / год</div>
+        <div class="value" id="t-loss-y2">не задано</div>
+        <div class="sub">12 × месячные потери</div>
+      </div>
+      <div class="kpi accent">
+        <div class="label">🎯 Уровень системы</div>
+        <div class="value" id="t-band" style="font-size:22px;line-height:1.2;white-space:normal">не задан</div>
+        <div class="sub" id="t-band-desc">Заполните хотя бы один блок</div>
+      </div>
+    </div>
+
+    <div class="banner" id="revenue-banner">
+      <div class="banner-inner">
+        <span>⚠️</span>
+        <span>Укажите выручку вверху, иначе расчёт потерь в рублях не работает. Без этой цифры диагностика теряет половину смысла.</span>
+      </div>
+    </div>
+
+    <div class="print-author">
+      <div class="print-author-left">
+        <div class="print-author-eyebrow">Что такое ЭММ</div>
+        <div class="print-author-name">Эталонная Модель Маркетинга</div>
+        <div class="print-author-role">14 ключевых блоков, через которые проходит каждый рубль в бизнесе. От первого клика по рекламе до повторной покупки и рекомендации.</div>
+      </div>
+      <div class="print-author-stats print-author-cols">
+        <div class="pa-col">
+          <div class="pa-col-eyebrow">Что это</div>
+          <div class="pa-col-text">14 контрольных точек бизнеса: лидогенерация, конверсия, удержание, аналитика. Если хоть одна работает плохо, деньги утекают незаметно.</div>
+        </div>
+        <div class="pa-col">
+          <div class="pa-col-eyebrow">Почему важно внедрить</div>
+          <div class="pa-col-text">Без модели не видно, где конкретно теряете. Поднимать рекламный бюджет = масштабировать утечки. Чинить наугад = терять время и деньги.</div>
+        </div>
+        <div class="pa-col">
+          <div class="pa-col-eyebrow">Что вы получите</div>
+          <div class="pa-col-text">Карту: где деньги уходят и что чинить первым. Прибыль растёт <b>x2-x10</b> на том же рекламном бюджете.</div>
+        </div>
+      </div>
+      <div class="print-author-creds">
+        Сначала чиним систему, потом масштабируем. Это и есть ЭММ.
+      </div>
+    </div>
+
+    <div class="intro-card" id="intro-container">
+      <h3>Как пользоваться диагностикой</h3>
+      <p>Это рентген системы маркетинга. 14 блоков, каждый блок = деньги, которые вы либо зарабатываете, либо теряете каждый месяц. Через 10-12 минут увидите, сколько именно теряете и куда смотреть в первую очередь.</p>
+      <div class="steps">
+        <div class="step"><b>Шаг 1. Выручка</b><span>Укажите среднюю выручку в месяц. Без этого расчёт потерь в рублях невозможен.</span></div>
+        <div class="step"><b>Шаг 2. Оценки</b><span>По каждому из 14 блоков честная оценка от 1 (нет) до 5 (идеально).</span></div>
+        <div class="step"><b>Шаг 3. Раскрытие</b><span>Нажмите на блок, чтобы увидеть пояснение: что это, почему теряете деньги, что делать.</span></div>
+      </div>
+    </div>
+
+    <div class="main-split">
+      <div>
+        <main id="root"></main>
+      </div>
+      <aside class="right-pane">
+        <div class="pane-card" id="weakspots" style="display:none">
+          <h3>🎯 Топ-3 слабых места</h3>
+          <p class="sub">Блоки с самой низкой оценкой. Куда копать в первую очередь.</p>
+          <div class="weakspots-list" id="weakspots-list"></div>
+        </div>
+        <div class="method-card">
+          <h4>Откуда цифры потерь</h4>
+          <p id="method-text"></p>
+        </div>
+      </aside>
+    </div>
+
+    <div class="trust-strip">
+      <h4>Почему этой диагностике можно верить</h4>
+      <div class="trust-grid">
+        <div class="trust-item">
+          <div class="num">400+</div>
+          <div class="lbl">проектов на методике ЭММ</div>
+          <div class="note">База, на которой откалиброваны проценты потерь. Среди клиентов: МЦ Елены Малышевой, Black Star Car Wash, Tony Robbins</div>
+        </div>
+        <div class="trust-item">
+          <div class="num">15+ лет</div>
+          <div class="lbl">опыт автора методики</div>
+          <div class="note">Денис Смирнов: экс-консультант Яндекса по стратегическому маркетингу, консультировал Сбербанк. Дважды лауреат премии «Лучший кейс в Digital-маркетинге»</div>
+        </div>
+        <div class="trust-item">
+          <div class="num">x2-x10</div>
+          <div class="lbl">прибыль без роста бюджета на рекламу</div>
+          <div class="note">ЭММ выжимает максимум из уже работающего трафика: +30-40% лидов на тот же бюджет, +10-50% конверсии в продажу, +20-100% к среднему чеку. Сначала чиним систему, потом масштабируем</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-cta">
+      <div class="bottom-cta-text">
+        <div class="bottom-cta-title">Получить разбор и план роста</div>
+        <div class="bottom-cta-sub" id="cta-sub">Бесплатный разбор 30 минут с экспертом по ЭММ. Покажу, где конкретно утекает прибыль и что починить в первую очередь, без увеличения рекламного бюджета. Ответы и цифры из диагностики беру с собой на встречу.</div>
+        <div class="bottom-cta-delta" id="cta-delta" style="display:none"></div>
+      </div>
+      <button class="bottom-cta-btn" onclick="onCta()">Написать в Telegram →</button>
+      <a class="print-tg-link" href="https://t.me/dmitry_trast">Написать в Telegram →</a>
+    </div>
+
+    <section class="social-proof">
+      <div class="social-proof-head">
+        <div class="eyebrow">Доказано на 400+ проектах</div>
+        <h3>Уже внедрили Эталонную Модель Маркетинга</h3>
+      </div>
+
+      <div class="clients-row">
+        <div class="client-card">
+          <img class="photo" src="img/malysheva.jpg" alt="Елена Малышева" loading="lazy">
+          <div class="logo">МЦ Елены Малышевой</div>
+          <div class="niche">Медицина, курсы снижения веса</div>
+          <div class="quote">Системный маркетинг для одной из самых узнаваемых медицинских клиник России. Лидогенерация, конверсия, удержание пациентов.</div>
+          <div class="metric">Кейс по ЭММ</div>
+        </div>
+        <div class="client-card">
+          <img class="photo" src="img/black-star.jpg" alt="Black Star Car Wash" loading="lazy">
+          <div class="logo">Black Star Car Wash</div>
+          <div class="niche">Премиум-услуги, сеть автомоек Тимати</div>
+          <div class="quote">Построение маркетинговой системы для премиального бренда. Привлечение, средний чек, повторные продажи.</div>
+          <div class="metric">Кейс по ЭММ</div>
+        </div>
+        <div class="client-card">
+          <img class="photo" src="img/tony-robbins.jpg" alt="Tony Robbins" loading="lazy">
+          <div class="logo">Tony Robbins</div>
+          <div class="niche">Международные бизнес-тренинги</div>
+          <div class="quote">Маркетинг под продажу программ мирового бизнес-тренера №1. Воронка, чек, LTV.</div>
+          <div class="metric">Кейс по ЭММ</div>
+        </div>
+      </div>
+
+      <div class="credentials-row">
+        <div class="cred"><b>400+ проектов</b>построение системного маркетинга по ЭММ</div>
+        <div class="cred"><b>15+ лет</b>в маркетинге, более 35 конференций как спикер</div>
+        <div class="cred"><b>Яндекс + Сбербанк</b>консультант по стратегическому маркетингу</div>
+        <div class="cred"><b>2x лауреат</b>премия «Лучший кейс в Digital-маркетинге»</div>
+      </div>
+    </section>
+
+    <section class="cases-gallery">
+      <div class="cases-gallery-head">
+        <div class="eyebrow">Полная галерея</div>
+        <h3>Бизнесы, которые выросли по ЭММ без доп. бюджета на рекламу</h3>
+        <p class="lead">Перед масштабированием рекламы, починили систему. <b>Сначала больше денег с того же трафика</b>, потом масштабирование. Поэтому те же бюджеты приносят в 2-10 раз больше прибыли.</p>
+      </div>
+      <div class="cases-grid">
+        <div class="case-card">
+          <img class="case-img" src="img/malysheva.jpg" alt="Курсы снижения веса в клинике Елены Малышевой" loading="lazy">
+          <div class="case-name">Курсы снижения веса в клинике Елены Малышевой</div>
+        </div>
+        <div class="case-card">
+          <img class="case-img" src="img/black-star.jpg" alt="Black Star Car Wash" loading="lazy">
+          <div class="case-name">Black Star Car Wash</div>
+        </div>
+        <div class="case-card">
+          <img class="case-img" src="img/tony-robbins.jpg" alt="Tony Robbins" loading="lazy">
+          <div class="case-name">Tony Robbins</div>
+        </div>
+        <div class="case-card">
+          <img class="case-img" src="img/doma-iz-pestova.webp" alt="Строительная компания Дома из Пестова" loading="lazy">
+          <div class="case-name">Строительная компания «Дома из Пестова»</div>
+        </div>
+        <div class="case-card">
+          <img class="case-img" src="img/g-nature.webp" alt="Натуральные краски G-NATURE" loading="lazy">
+          <div class="case-name">Натуральные краски из Германии G-NATURE</div>
+        </div>
+        <div class="case-card">
+          <img class="case-img" src="img/baumanskoe.webp" alt="Юридическое бюро Бауманское" loading="lazy">
+          <div class="case-name">Юридическое бюро «Бауманское»</div>
+        </div>
+        <div class="case-card">
+          <img class="case-img" src="img/premium-mebel.webp" alt="Фабрика мебели ПРЕМИУМ" loading="lazy">
+          <div class="case-name">Фабрика мебели «ПРЕМИУМ»</div>
+        </div>
+        <div class="case-card">
+          <img class="case-img" src="img/stomatologiya-moskva.webp" alt="Стоматологическая клиника в Москве" loading="lazy">
+          <div class="case-name">Стоматологическая клиника в Москве</div>
+        </div>
+        <div class="case-card">
+          <img class="case-img" src="img/simmetriya.webp" alt="Медицинская клиника Симметрия" loading="lazy">
+          <div class="case-name">Медицинская клиника «Симметрия»</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="bottom-cta-2">
+      <div class="bottom-cta">
+        <div class="bottom-cta-text">
+          <div class="bottom-cta-title">Получить разбор и план роста</div>
+          <div class="bottom-cta-sub" id="cta-sub-2">Покажу на разборе, где в вашей системе утекает прибыль и как вернуть её в кассу <b>без увеличения бюджета на рекламу</b>. Сначала чиним конверсию, удержание, повторные продажи. Бюджет докручиваем потом, на уже работающей системе.</div>
+          <div class="bottom-cta-delta" id="cta-delta-2" style="display:none"></div>
+        </div>
+        <button class="bottom-cta-btn" onclick="onCta()">Написать в Telegram →</button>
+        <a class="print-tg-link" href="https://t.me/dmitry_trast">Написать в Telegram →</a>
+      </div>
+    </div>
+
+    <div class="autosave-hint">✓ Прогресс сохраняется автоматически</div>
+
+  </main>
+</div>
+<script>
+const DATA = [{"module": "МОДУЛЬ 1. ЛИДОГЕНЕРАЦИЯ", "questions": [{"id": "q1", "block": "Фронт-энд (входной продукт)", "question": "Что клиент получает первым?", "simple": "Фронт-энд - это самое первое, что покупает у вас новый клиент. Дешёвое или бесплатное, чтобы он не боялся попробовать. Например: бесплатный аудит, диагностика за 990₽, пробный урок, тест-драйв. Цель фронт-энда не заработать, а получить контакт и доверие. Без него человек, который впервые услышал о вас, не готов сразу платить полную цену и просто уходит.", "example": "«Консультация бесплатно», «Услуга за 990 руб.»", "hints": "Это витрина. Простой, понятный, недорогой продукт", "if_none": "Клиент не заходит в воронку, теряете контакт на старте", "scale": "1 - нет\n2 - есть, но не выделяется\n3 - работает нестабильно\n4 - в системе\n5 - тестируется и обновляется", "why_losing": "Потенциальные клиенты видят рекламу, но не переходят. Теряете внимание и заявки.", "what_get": "Начнёте привлекать больше клиентов без увеличения бюджета. Заявки станут дешевле и чаще.", "what_do": "Разработайте входной продукт: консультация по сниженной цене, бесплатная диагностика и т.д."}, {"id": "q2", "block": "Уникальное предложение (мафия-оффер)", "question": "Есть ли предложение, от которого невозможно отказаться? (Ценность услуги больше в 10 раз цены)", "simple": "Мафия-оффер - это предложение, на которое нельзя ответить «нет». Ценность для клиента в 10 раз больше цены, плюс ограничение по времени или количеству. Не путать с обычной скидкой. Тут вы упаковываете уникальный набор выгод, гарантий и бонусов, который конкурент не может скопировать. Без такого оффера ваша реклама конкурирует ценой и проигрывает.", "example": "«Диагностика за 3000 вместо 15 000»", "hints": "Высокая ценность, срочность, понятные условия, минимальный риск", "if_none": "Высокий CAC, низкая конверсия, слабый ROMI", "scale": "1 - нет\n2 - разовые акции\n3 - оффер, но без упаковки\n4 - активен\n5 - тестируется и обновляется", "why_losing": "Конкуренты выделяются, а вы сливаетесь в сером фоне. Реклама не работает.", "what_get": "Реклама начнёт работать в разы эффективнее. Выделитесь среди конкурентов, повысите конверсию.", "what_do": "Создайте спецпредложение с ограничением: только 3 дня, только 10 штук, только для новых клиентов"}, {"id": "q3", "block": "Целевая аудитория (Аватар)", "question": "Кто ваш идеальный клиент?", "simple": "Аватар - портрет одного конкретного клиента, на которого вы работаете. Не «женщины 25-55», а «Марина, 34 года, мама двоих детей, доход 80 тыс., боится потолстеть после родов, хочет успевать всё». Когда аватар описан конкретно - реклама, тексты и оффер бьют точно в цель. Когда нет - вы стреляете «в облако» и платите за каждое попадание в 3-5 раз дороже.", "example": "Женщина, 34, мама, работает, ценит комфорт", "hints": "Возраст, профессия, боли, желания, частота покупки", "if_none": "Неэффективная реклама, слабый отклик, не те заявки", "scale": "1 - не описано\n2 - абстрактно\n3 - частично сегментировано\n4 - сегменты применяются\n5 - персонализировано", "why_losing": "Рекламируетесь всем подряд. Тратите в 3 раза больше на заявки.", "what_get": "Перестанете тратить деньги на «не тех» людей. Получите больше откликов от подходящих клиентов.", "what_do": "Опишите на 1 листе: пол, возраст, доход, страхи, желания. Используйте это для оффера и текстов"}, {"id": "q4", "block": "Каналы привлечения", "question": "Откуда приходят заявки?", "simple": "Канал привлечения - конкретный источник, откуда к вам приходят заявки. Telegram-канал, контекстная реклама в Яндекс.Директе, SEO (бесплатный трафик из поиска), таргет ВКонтакте, рекомендации. У каждого канала есть две ключевые цифры: CPL (сколько стоит одна заявка) и CAC (сколько стоит один реальный клиент). Без этих цифр вы не знаете, какой канал кормит бизнес, а какой ест бюджет впустую.", "example": "Telegram, SEO, Яндекс.Директ, таргет VK", "hints": "Указать CPL, CAC, платные и бесплатные источники", "if_none": "Теряется бюджет, нет прогноза, зависимость от одного канала", "scale": "1 - нет\n2 - есть, но без данных\n3 - считаются стоимость заявки\n4 - аналитика\n5 - омниканальность + ROMI", "why_losing": "Деньги уходят в никуда. Потому что вы не знаете, какие каналы реально работают.", "what_get": "Сократите расходы на рекламу и будете инвестировать только в работающие источники.", "what_do": "Определите 2-3 канала, которые дают заявки. Остальные отключите на 7 дней и посмотрите на динамику"}]}, {"module": "МОДУЛЬ 2. КОНВЕРСИЯ И ДОПРОДАЖИ", "questions": [{"id": "q5", "block": "Воронка продаж", "question": "Прописан ли путь от заявки до оплаты?", "simple": "Воронка - последовательность шагов, через которые проходит клиент от первого контакта до оплаты. На каждом шаге часть людей отваливается, как песок через воронку. Например: 100 заявок → 60 ответили на звонок → 30 пришли на консультацию → 12 оплатили. Знание конверсии каждого шага показывает, где именно теряете деньги. Без воронки вы не понимаете, где починить дырку.", "example": "Контакт → презентация → предложение → оплата", "hints": "Карта этапов, слабые места, скрипты, показатели", "if_none": "Потеря клиентов между шагами, неясная конверсия", "scale": "1 - не прописана\n2 - частично\n3 - схема есть\n4 - контролируется\n5 - автоматизация", "why_losing": "Клиент путается, не знает, что дальше. Менеджер забывает предложить следующий шаг.", "what_get": "Клиенты начнут быстрее доходить до покупки. Меньше потерь на каждом этапе взаимодействия.", "what_do": "Нарисуйте 3 шага: «оставил заявку → получил звонок → оплатил». Сделайте, чтобы каждый шаг был автоматическим"}, {"id": "q6", "block": "Обработка заявок", "question": "За сколько минут отвечаете? Есть скрипты?", "simple": "Это скорость и качество ответа на новую заявку. Статистика жёсткая: если ответить за 5 минут, конверсия в 9 раз выше, чем за час. Скрипт - готовый сценарий разговора с клиентом, чтобы менеджер не импровизировал, не забывал важных вопросов и не упускал момент закрытия сделки. Без регламента и скриптов вы теряете до 40% горячих клиентов просто потому, что слишком долго перезваниваете.", "example": "Менеджер звонит в течение 15 минут", "hints": "Регламент, скорость реакции, качество общения", "if_none": "Теряете до 40% горячих клиентов", "scale": "1 - хаос\n2 - кто успел, тот звонит\n3 - есть скрипт\n4 - быстрый ответ + CRM\n5 - обучение", "why_losing": "Пока думаете, клиент уже выбрал конкурента", "what_get": "Перехватите клиентов раньше конкурентов. Продажи вырастут за счёт скорости реакции.", "what_do": "Установите правило: заявки обрабатываются в течение 15 минут. Даже ночью автоответ"}, {"id": "q7", "block": "CRM (учёт клиентов)", "question": "Есть ли база всех клиентов и заявок?", "simple": "CRM (Customer Relationship Management) - программа для учёта клиентов и заявок. Хранит всю историю: кто, когда обратился, что покупал, на каком этапе сейчас, когда нужно перезвонить. Без CRM заявки теряются в блокнотах, чатах мессенджеров и голове менеджера. Когда менеджер увольняется, уходит вся база. С CRM вы видите каждого клиента, ничего не забываете и можете считать реальные показатели.", "example": "AmoCRM, Excel с этапами", "hints": "Статусы, напоминания, повторные касания", "if_none": "Потеря информации, нет повторных касаний, аналитика невозможна", "scale": "1 - нет\n2 - Excel-хаос\n3 - CRM не используют\n4 - CRM работает\n5 - связана с воронкой", "why_losing": "Заявки забываются, теряются, дублируются. Вы тратите вдвое больше на привлечение.", "what_get": "Перестанете терять заявки. Получите полный контроль над базой и статусами клиентов.", "what_do": "Ведите таблицу или CRM. Дата, Имя, Телефон, Откуда пришёл, Что хотел, Статус"}, {"id": "q8", "block": "Допродажи (Upsell / Cross-sell)", "question": "Есть ли предложения на +чек?", "simple": "Upsell - продать дороже (вместо стандартного тарифа предложить премиум). Cross-sell - продать дополнительно (к стрижке предложить укладку и уходовый шампунь). Это самый дешёвый способ роста прибыли: клиент уже у вас, уже готов платить, осталось только предложить. Грамотные допродажи поднимают средний чек на 20-50% без рубля дополнительных затрат на рекламу.", "example": "Доплата за расширенный тариф, допуслуги", "hints": "Апгрейд, комплект, премиум-версия, набор", "if_none": "Теряется 10-50% выручки с каждого клиента", "scale": "1 - нет\n2 - вручную\n3 - шаблон есть\n4 - встроено в сценарии\n5 - автоматизация", "why_losing": "Каждый клиент покупает минимум, хотя мог бы в 2-3 раза больше", "what_get": "Увеличите прибыль без привлечения новых клиентов. Средний чек вырастет на 10-50%.", "what_do": "Введите правило: предлагать улучшенный вариант и в наборе дешевле"}]}, {"module": "МОДУЛЬ 3. УДЕРЖАНИЕ И ПОВТОРНЫЕ ПРОДАЖИ", "questions": [{"id": "q9", "block": "Работа с базой клиентов", "question": "Используете ли базу для продаж?", "simple": "База - список всех клиентов, кто хоть раз что-то у вас купил или оставил контакт. Это ваш самый ценный актив, дороже сайта и оборудования. Привлечь нового клиента в 5-7 раз дороже, чем продать тому, кто уже покупал. База без работы с ней превращается в мёртвый груз. База с регулярными касаниями (рассылки, акции, новости) приносит 30-50% всей выручки.", "example": "Рассылка, сегментация, звонки", "hints": "Покупал, когда, как часто, триггеры по сегментам", "if_none": "Теряется LTV, вы платите за новых вместо повторных", "scale": "1 - нет базы\n2 - не используется\n3 - минимальная активность\n4 - сегментация\n5 - стратегия", "why_losing": "Каждый клиент купил 1 раз и забыл. А вы платите за рекламу снова и снова.", "what_get": "Сможете продавать повторно тем, кто уже покупал. Это дешевле и прибыльнее, чем привлекать новых.", "what_do": "Соберите таблицу: кто, когда покупал, сколько раз, на какую сумму"}, {"id": "q10", "block": "Повторные продажи", "question": "Есть ли механики возврата?", "simple": "Механики возврата - это система, которая возвращает клиента за второй, третьей, десятой покупкой. Бывают автоматические (письмо через 30 дней, СМС-напоминание о записи, рассылка с новинками) и ручные (звонок менеджера, личное сообщение). Когда механики работают, LTV (прибыль с клиента за всё время) растёт, а окупаемость рекламы растёт в разы. Без них клиент покупает один раз и пропадает.", "example": "Письмо через 30 дней, SMS", "hints": "Напоминания, акции, автоворонки", "if_none": "Падает LTV, теряются дешёвые продажи", "scale": "1 - нет\n2 - редкие рассылки\n3 - вручную\n4 - автоворонки\n5 - сегментация + офферы", "why_losing": "Клиенты не возвращаются. Не потому что не хотят, а потому что про вас забыли.", "what_get": "Клиенты будут возвращаться сами, без дополнительных затрат на рекламу.", "what_do": "Сделайте СМС или письма на 7, 30 и 60 дней после покупки"}, {"id": "q11", "block": "Возврат давних клиентов (реактивация)", "question": "Как возвращаете «спящих» клиентов?", "simple": "Спящий клиент - тот, кто раньше покупал, но давно (60+ дней) не возвращался. Реактивация - целенаправленная попытка вернуть его специальным предложением: «Скучаем, дарим скидку 20% до пятницы». В среднем 10-20% спящих оживают и приносят деньги без затрат на новую рекламу. Это в чистом виде «найденные деньги», которые уже лежат в вашей базе и ждут одного письма или звонка.", "example": "«Мы скучаем! Скидка 20% до пятницы»", "hints": "Письма, звонки, спецпредложения", "if_none": "Деньги умирают в базе", "scale": "1 - никак\n2 - спонтанно\n3 - списки\n4 - кампании\n5 - автозапуски", "why_losing": "Те, кто раньше покупал, просто теряются. А могли бы вернуться.", "what_get": "Вернёте тех, кто давно не покупал. Это спящие деньги в вашей клиентской базе.", "what_do": "Найдите тех, кто не покупал больше 60 дней. Напишите: «Скучаем. Вам подарок, если вернётесь»"}, {"id": "q12", "block": "Реферальная программа", "question": "Есть вознаграждение за рекомендацию?", "simple": "Реферальная программа - это сарафанное радио под управлением. Вы платите бонус клиенту за то, что он привёл друга. Самый дешёвый канал привлечения в мире: довольный клиент рекомендует охотнее и убедительнее, чем работает любая реклама. Главное в реферальной программе - простая механика (1 действие, 1 ссылка), быстрая выплата бонуса и понятная выгода обеим сторонам.", "example": "«Приведи друга, получи 500 ₽»", "hints": "Бонусы и клиенту, и новому", "if_none": "Нет органического роста, слабый охват", "scale": "1 - нет\n2 - вручную\n3 - оффер есть\n4 - продвигается\n5 - трекинг", "why_losing": "Упускаете сарафан, не используете довольных клиентов", "what_get": "Начнёте получать новых клиентов от текущих без затрат на трафик.", "what_do": "Создайте простую механику: «Приведи друга, получи подарок»"}]}, {"module": "МОДУЛЬ 4. АНАЛИТИКА И ПРИБЫЛЬ", "questions": [{"id": "q13", "block": "Юнит-экономика (деньги на клиенте)", "question": "Знаете ли Вы, сколько стоит клиент и сколько он приносит?", "simple": "Юнит-экономика - сколько денег приносит ОДИН клиент за всё время минус сколько он стоил вам в привлечении. Если приносит больше, чем стоил, бизнес растёт. Если меньше, каждый клиент = убыток: чем больше вкладываете в рекламу, тем больше дыра в кассе. Без юнит-экономики решения о бюджете на рекламу принимаются «на глаз», и масштабирование легко уводит компанию в минус.", "example": "Клиент приносит 15 000 ₽, а реклама на него стоит 4 000 ₽ → прибыль есть", "hints": "Сколько вы тратите на рекламу? Сколько зарабатываете с клиента? Какой продукт выгодный, какой нет?", "if_none": "Нельзя масштабироваться, нет контроля прибыли, нельзя прогнозировать", "scale": "1 - не считаем\n2 - прикидываем на глаз\n3 - считаем вручную\n4 - используем для решений\n5 - встроено в процессы и отчётность", "why_losing": "Не знаете, выгоден ли клиент вообще. Не знаете, сколько можете потратить на его привлечение.", "what_get": "Поймёте, сколько зарабатываете с каждого клиента. Сможете точно рассчитывать окупаемость.", "what_do": "Умножьте: средний чек × сколько раз в среднем покупает. Это и есть ваша ценность клиента"}, {"id": "q14", "block": "Окупаемость рекламы (ROMI / CAC / LTV)", "question": "Считаете ли Вы окупаемость рекламы?", "simple": "Три ключевые цифры здорового маркетинга. CAC (Customer Acquisition Cost) - сколько стоит привлечь одного клиента (все расходы на рекламу / количество клиентов). LTV (Lifetime Value) - сколько прибыли приносит клиент за всё время работы с вами. ROMI - возврат на маркетинговые вложения, формула (доход с рекламы - расход на рекламу) / расход × 100%. Здоровый бизнес: LTV не меньше чем в 3 раза больше CAC, ROMI выше 200%.", "example": "Из 100 000 ₽ рекламы получаем 300 000 ₽ → реклама окупается в 3 раза", "hints": "Формулы: CAC, ROMI, LTV. Анализ по каналам, дашборды, отчётность", "if_none": "Не понятно, какие каналы работают, куда уходят деньги, какие клиенты выгодны или убыточны", "scale": "1 - не считаем\n2 - вручную раз в месяц\n3 - в таблице\n4 - в CRM или BI\n5 - в сквозной аналитике, сравнивается по каналам и сегментам", "why_losing": "Тратите на рекламу, не понимаете, даёт ли она прибыль", "what_get": "Увидите, какие каналы приносят прибыль, а какие сливают бюджет. Увеличите рентабельность.", "what_do": "Считайте: сколько потратили на канал / сколько заработали с этого канала"}]}];
+const BANDS = [
+  {min:0,  max:27, name:"🔥 Полный хаос",                desc:"Маркетинга как системы нет. Реклама запускается интуитивно, заявки теряются, аналитика не ведётся. Бизнес растёт за счёт удачи, а не управления. Каждый месяц на столе остаётся ~70% потенциальной выручки.", pct:0.70},
+  {min:28, max:41, name:"⚠️ Ручной маркетинг",            desc:"Реклама есть, заявки идут, но всё держится на людях и героических усилиях. Нет автоматизации, нет учёта, не считается окупаемость. Стоит ключевому человеку уйти, всё встанет. Теряете около половины возможной выручки.", pct:0.50},
+  {min:42, max:55, name:"🟡 Стабильный, но неуправляемый", desc:"Основные процессы работают, но в ручном режиме. Прибыль есть, но непредсказуемая. Нет фокуса на повторных продажах и юнит-экономике. Масштабироваться рискованно: непонятно, что именно усиливать.",                                  pct:0.30},
+  {min:56, max:62, name:"✅ Системный маркетинг",          desc:"Большинство блоков внедрено, есть аналитика и управление. Решения принимаются на цифрах, а не на ощущениях. Маркетинг работает как актив, а не как затраты. Осталось донастроить и оптимизировать.",                pct:0.15},
+  {min:63, max:70, name:"⭐ Эталонный маркетинг",          desc:"Все 14 блоков внедрены и связаны в систему. Прибыль прогнозируется, ROMI выше 300%, команда работает в ритме. Деньги в рекламу превращаются в деньги в кассе предсказуемо. Это и есть эталонная модель.",     pct:0.00},
+];
+
+const METHOD_NOTE = "Процент потерь рассчитывается так: каждый из 14 блоков ЭММ отвечает за свою часть прибыли (привлечение, конверсия, удержание, аналитика). Когда блок не работает, выручка течёт через эту дыру. Проценты привязаны к уровню по статистике 400+ проектов, прошедших методику Дениса Смирнова. Хаос = 70% упущенной выгоды, эталон = 0%.\n\nВажно: цифра в рублях, это оценка, не точная сумма. Реальные потери определяются на разборе по фактическим данным компании (CAC, LTV, конверсия воронки). Эта диагностика, рамка для предметного разговора, а не финальный аудит.";
+
+const state = {scores:{}, client:"", date:new Date().toISOString().slice(0,10), revenue:0, expert:"", theme:"light"};
+
+function loadState(){
+  try{
+    const saved = JSON.parse(localStorage.getItem("emm-diag")||"{}");
+    Object.assign(state, saved);
+  }catch(e){}
+}
+function saveState(){ localStorage.setItem("emm-diag", JSON.stringify(state)); }
+
+function render(){
+  const root = document.getElementById("root");
+  root.innerHTML = DATA.map((mod,idx) => {
+    const modScore = mod.questions.reduce((s,q)=>s+(state.scores[q.id]||0),0);
+    const modMax = mod.questions.length*5;
+    const chip = document.getElementById(`nav-score-${idx+1}`);
+    if(chip) chip.textContent = `${modScore}/${modMax}`;
+    return `
+      <section class="module" id="mod-${idx+1}">
+        <div class="module-head">
+          <h2>${mod.module}</h2>
+          <span class="mod-score">${modScore} / ${modMax}</span>
+        </div>
+        ${mod.questions.map(q => renderQ(q)).join("")}
+      </section>
+    `;
+  }).join("");
+  if(window.__rebindModuleSpy) window.__rebindModuleSpy();
+}
+
+function renderQ(q){
+  const s = state.scores[q.id] || 0;
+  const cls = s ? `scored-${s}` : "";
+  return `
+    <div class="q ${cls}" data-id="${q.id}">
+      <div class="head" onclick="toggleQ('${q.id}',event)">
+        <div>
+          <div class="block">${esc(q.block)}</div>
+          <div class="question">${esc(q.question)}</div>
+        </div>
+        <div class="scale-buttons" onclick="event.stopPropagation()">
+          <div class="row">
+            ${[1,2,3,4,5].map(n => `<button class="${s===n?'sel-'+n:''}" onclick="setScore('${q.id}',${n})" title="${scaleHint(n)}">${n}</button>`).join("")}
+          </div>
+          <div class="labels"><span>нет</span><span>слабо</span><span>средне</span><span>норм</span><span>идеально</span></div>
+        </div>
+        <div class="toggle">▸</div>
+      </div>
+      <div class="details">
+        <div class="simple-block"><b>Что это вообще такое</b>${esc(q.simple||"")}</div>
+        <dl>
+          <dt>Пример</dt><dd>${esc(q.example)}</dd>
+          <dt>Если нет этого блока</dt><dd>${esc(q.if_none)}</dd>
+          <dt>Шкала 1-5</dt><dd class="scale-legend">${esc(q.scale)}</dd>
+          <dt>Почему теряете деньги</dt><dd class="why-block">${esc(q.why_losing)}</dd>
+          <dt>Что получите, если внедрите</dt><dd class="get-block">${esc(q.what_get)}</dd>
+          <dt>Что сделать первым шагом</dt><dd class="do-block">${esc(q.what_do)}</dd>
+        </dl>
+      </div>
+    </div>
+  `;
+}
+
+function scaleHint(n){
+  return ["нет вообще","есть, но слабо","работает наполовину","в системе","работает идеально"][n-1];
+}
+
+function esc(s){ return String(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"})[c]); }
+
+function setScore(id,n){
+  state.scores[id] = (state.scores[id]===n) ? 0 : n;
+  saveState();
+  render();
+  updateTotal();
+}
+
+function toggleQ(id, e){
+  if(e.target.tagName==="BUTTON") return;
+  document.querySelector(`.q[data-id="${id}"]`).classList.toggle("open");
+}
+
+function getTotalScore(){ return Object.values(state.scores).reduce((a,b)=>a+(b||0),0); }
+function getBand(score){ return BANDS.find(b => score>=b.min && score<=b.max) || BANDS[0]; }
+function fmtRub(n){ return new Intl.NumberFormat("ru-RU").format(Math.round(n))+" ₽"; }
+
+function updateTotal(){
+  const score = getTotalScore();
+  const filled = Object.values(state.scores).filter(x=>x>0).length;
+  const band = filled ? getBand(score) : null;
+  const rev = Number(state.revenue) || 0;
+  const loss = band ? rev * band.pct : 0;
+
+  document.getElementById("t-score").innerHTML = `${score}<small> / 70</small>`;
+  document.getElementById("t-fill").style.width = (score/70*100)+"%";
+  document.getElementById("t-progress-text").textContent = `Заполнено ${filled} из 14 (${Math.round(filled/14*100)}%)`;
+  document.getElementById("method-text").textContent = METHOD_NOTE;
+
+  const banner = document.getElementById("revenue-banner");
+  if(banner) banner.classList.toggle("show", !rev);
+
+  renderWeakSpots(rev, filled);
+
+  if(band){
+    document.getElementById("t-band").textContent = band.name;
+    document.getElementById("t-band-desc").textContent = band.desc;
+    document.getElementById("t-loss").textContent = rev ? fmtRub(loss) : "укажите выручку";
+    document.getElementById("t-loss-year").textContent = rev ? `${Math.round(band.pct*100)}% от выручки в месяц` : "";
+    document.getElementById("t-loss-y2").textContent = rev ? fmtRub(loss*12) : "не задано";
+    document.getElementById("t-prelim").textContent = "";
+  }else{
+    document.getElementById("t-band").textContent = "не задан";
+    document.getElementById("t-band-desc").textContent = `Ответьте хотя бы на один блок, чтобы увидеть уровень`;
+    if(rev){
+      const worstLoss = rev * 0.70;
+      document.getElementById("t-loss").textContent = `до ${fmtRub(worstLoss)}`;
+      document.getElementById("t-loss-year").textContent = "по худшему сценарию (хаос)";
+      document.getElementById("t-loss-y2").textContent = `до ${fmtRub(worstLoss*12)}`;
+      document.getElementById("t-prelim").textContent = "это потолок потерь, ответьте на 14 вопросов и узнаете точно";
+    }else{
+      const exampleRev = 3000000;
+      const exampleLoss = exampleRev * 0.50;
+      document.getElementById("t-loss").textContent = `≈ ${fmtRub(exampleLoss)}`;
+      document.getElementById("t-loss-year").textContent = "пример: выручка 3 млн ₽, уровень «ручной маркетинг»";
+      document.getElementById("t-loss-y2").textContent = `≈ ${fmtRub(exampleLoss*12)}`;
+      document.getElementById("t-prelim").textContent = "введите свою выручку, чтобы увидеть свою цифру";
+    }
+  }
+
+  updateCtaDelta(band, rev, filled);
+}
+
+function getNextBand(band){
+  if(!band) return null;
+  const idx = BANDS.indexOf(band);
+  return idx >= 0 && idx < BANDS.length - 1 ? BANDS[idx+1] : null;
+}
+
+function updateCtaDelta(band, rev, filled){
+  const targets = [
+    {sub: document.getElementById("cta-sub"),   delta: document.getElementById("cta-delta")},
+    {sub: document.getElementById("cta-sub-2"), delta: document.getElementById("cta-delta-2")}
+  ];
+
+  targets.forEach(({sub, delta}) => {
+    if(!delta || !sub) return;
+    if(!band || !rev || filled < 7){
+      delta.style.display = "none";
+      sub.style.display = "";
+      return;
+    }
+    const next = getNextBand(band);
+    if(!next){
+      delta.innerHTML = `Вы на уровне <b>${band.name.replace(/^[^а-яА-Яa-zA-Z]+/,"")}</b>. Это потолок. Разбор покажет, как удерживать систему и масштабироваться без потери управляемости.`;
+      delta.style.display = "";
+      sub.style.display = "none";
+      return;
+    }
+    const monthDelta = rev * (band.pct - next.pct);
+    const yearDelta = monthDelta * 12;
+    const nextName = next.name.replace(/^[^а-яА-Яa-zA-Z]+/,"").trim();
+    delta.innerHTML = `Поднять систему на следующий уровень, <b>${nextName}</b>, реально за 2-3 месяца, <b>без роста бюджета на рекламу</b>. Это <b>+${fmtRub(monthDelta)} в месяц</b> в кассу, около <b>${fmtRub(yearDelta)} за год</b>. На разборе соберём план, с чего начать.`;
+    delta.style.display = "";
+    sub.style.display = "none";
+  });
+}
+
+function renderWeakSpots(rev, filled){
+  const wrap = document.getElementById("weakspots");
+  const list = document.getElementById("weakspots-list");
+  if(filled < 5){ wrap.style.display = "none"; return; }
+  const allQ = DATA.flatMap(m => m.questions);
+  const ranked = allQ
+    .map(q => ({q, score: state.scores[q.id]||0}))
+    .filter(x => x.score > 0 && x.score <= 3)
+    .sort((a,b) => a.score - b.score);
+  if(ranked.length === 0){ wrap.style.display = "none"; return; }
+  const top3 = ranked.slice(0,3);
+  const lossPerBlock = rev ? Math.round(rev * 0.05) : 0;
+  list.innerHTML = top3.map((x,i) => {
+    const lossText = lossPerBlock
+      ? `Оценочные потери на этом блоке: <b>${fmtRub(lossPerBlock)} в месяц</b>`
+      : `Укажите выручку, чтобы увидеть потери в рублях`;
+    return `
+      <div class="weakspot">
+        <div class="rank">Слабое место №${i+1}</div>
+        <div class="name">${esc(x.q.block)}</div>
+        <span class="score">Ваша оценка: ${x.score}/5</span>
+        <div class="loss-est">${lossText}</div>
+        <div class="first-step"><b>Первый шаг:</b> ${esc(x.q.what_do)}</div>
+      </div>`;
+  }).join("");
+  wrap.style.display = "";
+}
+
+function fmtNum(n){ return new Intl.NumberFormat("ru-RU").format(n); }
+function parseNum(s){ return Number(String(s).replace(/[^\d]/g,"")) || 0; }
+
+function bindMeta(){
+  for(const k of ["client","date","expert"]){
+    const el = document.getElementById(k);
+    el.value = state[k] || "";
+    el.addEventListener("input", e => {
+      state[k] = e.target.value;
+      saveState();
+      updateTotal();
+    });
+  }
+  const rev = document.getElementById("revenue");
+  rev.value = state.revenue ? fmtNum(state.revenue) : "";
+  rev.addEventListener("input", e => {
+    const caretFromEnd = e.target.value.length - e.target.selectionStart;
+    const num = parseNum(e.target.value);
+    state.revenue = num;
+    e.target.value = num ? fmtNum(num) : "";
+    const pos = Math.max(0, e.target.value.length - caretFromEnd);
+    try { e.target.setSelectionRange(pos, pos); } catch(_){}
+    saveState();
+    updateTotal();
+  });
+  rev.addEventListener("focus", e => { e.target.select(); });
+}
+
+function exportJSON(){
+  const out = {meta:{client:state.client,date:state.date,revenue:state.revenue,expert:state.expert},scores:state.scores,total:getTotalScore(),band:getBand(getTotalScore()).name,loss_month:state.revenue*getBand(getTotalScore()).pct};
+  const blob = new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `diagnostic-${state.client||"client"}-${state.date}.json`;
+  a.click();
+}
+
+function resetAll(){
+  if(!confirm("Сбросить все оценки и поля?")) return;
+  localStorage.removeItem("emm-diag");
+  Object.assign(state,{scores:{},client:"",date:new Date().toISOString().slice(0,10),revenue:0,expert:"",theme:state.theme});
+  bindMeta();
+  render();
+  updateTotal();
+}
+
+function applyTheme(){
+  document.body.setAttribute("data-theme", state.theme || "light");
+  const btn = document.getElementById("theme-btn");
+  if(btn) btn.textContent = state.theme === "dark" ? "☀️" : "🌙";
+}
+
+function toggleTheme(){
+  state.theme = state.theme === "dark" ? "light" : "dark";
+  saveState();
+  applyTheme();
+}
+
+function printAll(){
+  document.querySelectorAll(".q").forEach(el => {
+    const id = el.getAttribute("data-id");
+    const scored = state.scores[id] && state.scores[id] > 0;
+    if(scored) el.classList.add("open");
+    else el.classList.remove("open");
+  });
+  setTimeout(() => window.print(), 100);
+}
+
+const EXPERT_TG = "https://t.me/dmitry_trast";
+const RECIPIENT_NAME = "Дмитрий";
+
+document.querySelectorAll(".print-tg-link").forEach(a => {
+  a.href = EXPERT_TG;
+});
+
+function onCta(){
+  const score = getTotalScore();
+  const filled = Object.values(state.scores).filter(x=>x>0).length;
+  if(filled < 5){
+    alert("Заполните хотя бы 5 блоков из 14, чтобы разбор был осмысленным. Сейчас заполнено: " + filled + ".");
+    return;
+  }
+  const rev = Number(state.revenue) || 0;
+  const band = getBand(score);
+  const loss = rev ? Math.round(rev * band.pct) : 0;
+  const next = getNextBand(band);
+  const monthDelta = (rev && next) ? Math.round(rev * (band.pct - next.pct)) : 0;
+
+  const weak = DATA.flatMap(m => m.questions)
+    .map(q => ({q, s: state.scores[q.id]||0}))
+    .filter(x => x.s > 0 && x.s <= 3)
+    .sort((a,b) => a.s - b.s)
+    .slice(0,3)
+    .map((x,i) => `${i+1}. ${x.q.block} (${x.s}/5)`)
+    .join("\n");
+
+  const senderLine = state.expert ? ` Меня зовут ${state.expert}.` : "";
+  const msg = [
+    `Здравствуйте, ${RECIPIENT_NAME}.${senderLine} Прошёл диагностику по ЭММ.`,
+    "",
+    "Компания: " + (state.client || "не указана"),
+    "Выручка/мес: " + (rev ? fmtRub(rev) : "не указана"),
+    "Баллов: " + score + "/70",
+    "Уровень системы: " + band.name,
+    "Оценочные потери/мес: " + (loss ? fmtRub(loss) : "укажите выручку"),
+    "Оценочные потери/год: " + (loss ? fmtRub(loss*12) : "укажите выручку"),
+    next && monthDelta ? ("Потенциал на следующий уровень («" + next.name + "»): +" + fmtRub(monthDelta) + "/мес, " + fmtRub(monthDelta*12) + "/год") : "",
+    "",
+    "Топ слабых мест:",
+    weak || "не определены",
+    "",
+    "Готов на разбор. Когда удобно?"
+  ].filter(Boolean).join("\n");
+
+  navigator.clipboard?.writeText(msg).catch(()=>{});
+  window.open(EXPERT_TG, "_blank", "noopener");
+
+  setTimeout(() => {
+    alert("Текст заявки скопирован в буфер обмена. Откройте Telegram и вставьте сообщение в чат.");
+  }, 300);
+}
+
+loadState();
+applyTheme();
+bindMeta();
+render();
+updateTotal();
+initSidebarNav();
+
+function initSidebarNav(){
+  const links = document.querySelectorAll('.sidebar .nav a[href^="#mod-"]');
+  let manualSwitch = false;
+  let manualTimer = null;
+
+  function setActive(idx){
+    links.forEach(a => a.classList.remove("active"));
+    const link = document.querySelector(`.sidebar .nav a[href="#mod-${idx}"]`);
+    if(link) link.classList.add("active");
+  }
+
+  links.forEach(a => {
+    a.addEventListener("click", e => {
+      e.preventDefault();
+      const id = a.getAttribute("href").slice(1);
+      const target = document.getElementById(id);
+      if(!target) return;
+      manualSwitch = true;
+      clearTimeout(manualTimer);
+      manualTimer = setTimeout(() => { manualSwitch = false; }, 800);
+      const idx = Number(id.replace("mod-",""));
+      setActive(idx);
+      target.scrollIntoView({behavior:"smooth", block:"start"});
+    });
+  });
+
+  let obs = null;
+  if("IntersectionObserver" in window){
+    obs = new IntersectionObserver(entries => {
+      if(manualSwitch) return;
+      let topMost = null;
+      entries.forEach(en => {
+        if(en.isIntersecting){
+          if(!topMost || en.boundingClientRect.top < topMost.boundingClientRect.top){
+            topMost = en;
+          }
+        }
+      });
+      if(topMost){
+        const idx = Number(topMost.target.id.replace("mod-",""));
+        setActive(idx);
+      }
+    }, {rootMargin:"-80px 0px -55% 0px", threshold:0});
+  }
+
+  window.__rebindModuleSpy = function(){
+    if(!obs) return;
+    obs.disconnect();
+    document.querySelectorAll('main#root .module').forEach(m => obs.observe(m));
+  };
+  window.__rebindModuleSpy();
+}
+</script>
+</body>
+</html>
