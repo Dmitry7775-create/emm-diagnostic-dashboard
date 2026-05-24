@@ -199,10 +199,17 @@
   .q .scale-buttons button.sel-3{background:var(--r3);color:#111111;border-color:var(--r3)}
   .q .scale-buttons button.sel-4{background:var(--r4);color:#111111;border-color:var(--r4)}
   .q .scale-buttons button.sel-5{background:var(--r5);color:#FFFFFF;border-color:var(--r5)}
-  .q .toggle{font-size:24px;color:var(--mute);text-align:center;user-select:none;transition:transform .15s}
+  .q .toggle{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--accent-2);background:var(--simple-bg);border:1px solid var(--accent);border-radius:999px;padding:6px 12px;user-select:none;transition:all .15s;white-space:nowrap;cursor:pointer}
+  .q .toggle .chev{display:inline-block;font-size:14px;transition:transform .2s}
+  .q:hover .toggle{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+  .q.open .toggle{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+  .q.open .toggle .chev{transform:rotate(90deg)}
+  .q .toggle .label-closed{display:inline}
+  .q .toggle .label-open{display:none}
+  .q.open .toggle .label-closed{display:none}
+  .q.open .toggle .label-open{display:inline}
   .q .details{padding:0 24px 22px;display:none;border-top:1px solid var(--line);margin-top:0}
   .q.open .details{display:block}
-  .q.open .toggle{transform:rotate(90deg)}
   .q .details .simple-block{background:var(--simple-bg);border-left:3px solid var(--accent-2);padding:16px 20px;border-radius:var(--radius-xs);margin:18px 0 0;font-size:18px;line-height:1.55}
   .q .details .simple-block b{display:block;font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:0.04em;text-transform:uppercase}
   .q .details dl{margin:16px 0 0;display:grid;grid-template-columns:220px 1fr;gap:12px 22px;font-size:17px}
@@ -890,7 +897,7 @@ function renderQ(q){
           </div>
           <div class="labels"><span>нет</span><span>слабо</span><span>средне</span><span>норм</span><span>идеально</span></div>
         </div>
-        <div class="toggle">▸</div>
+        <div class="toggle"><span class="chev">▸</span><span class="label-closed">Подробнее</span><span class="label-open">Свернуть</span></div>
       </div>
       <div class="details">
         <div class="simple-block"><b>Что это вообще такое</b>${esc(q.simple||"")}</div>
